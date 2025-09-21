@@ -10,7 +10,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io/)
 
-[功能特性](#功能特性) • [快速开始](#快速开始) • [部署指南](#部署指南) • [API文档](#api文档) • [贡献指南](#贡献指南)
+[功能特性](#功能特性) • [快速开始](#快速开始) • [管理工具](#管理工具) • [配置说明](#配置说明) • [故障排除](#故障排除)
 
 </div>
 
@@ -30,19 +30,21 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，通过 
 
 ### 🛠️ MCP 工具集
 
-#### 剧本管理
-- `list_playbooks` - 获取所有可用的 SOAR 剧本列表
-- `execute_playbook` - 执行 SOAR 剧本
-- `get_execution_status` - 获取剧本的执行状态
+#### 剧本查询与执行
+- `list_playbooks_quick` - 获取简洁的剧本列表（ID、name、displayName），适用于 AI 快速理解剧本选项
+- `query_playbook_execution_params` - 根据剧本ID查询执行所需的参数定义
+- `execute_playbook` - 执行指定的 SOAR 剧本，支持参数传递
+- `query_playbook_execution_status` - 根据活动ID查询剧本执行状态
+- `query_playbook_execution_result` - 根据活动ID查询剧本执行的详细结果
 
-#### 事件管理
-- `create_event` - 创建新的安全事件
-- `list_events` - 获取安全事件列表
+#### 重要说明
+- **剧本ID格式**：支持 LONG 类型（64位整数），可以使用整数或字符串格式
+- **执行流程**：查询参数 → 执行剧本 → 检查状态 → 获取结果
+- **兼容性**：剧本ID 可能超出 JavaScript 安全整数范围，建议使用字符串格式
 
 ### 📊 MCP 资源
 
 - `soar://playbooks` - SOAR 剧本列表
-- `soar://events` - 安全事件列表
 
 ### 🌐 Web 管理界面
 
@@ -210,21 +212,32 @@ python3 soar_mcp_server.py
 ```
 📋 当前可用的 SOAR 剧本：
 
-1. 🔍 IP信誉检查剧本 (ID: 1907203516548373)
-   - 描述: 检查IP地址的威胁情报信息
+1. 🔍 IP信誉检查剧本 (ID: "1907203516548373")
+   - 内部名称: ip_reputation_check
+   - 显示名称: IP信誉检查剧本
    - 状态: 启用中
 ```
 
-#### 执行安全剧本
+#### 完整执行流程示例
 
+1. **查询剧本参数**：
 ```
-请执行IP信誉检查剧本，检查IP地址 192.168.1.100
+请查询剧本 1907203516548373 需要哪些执行参数
 ```
 
-#### 查看执行状态
-
+2. **执行剧本**：
 ```
-查看刚才执行的剧本状态
+请执行剧本 1907203516548373，检查IP地址 192.168.1.100
+```
+
+3. **查看执行状态**：
+```
+查看活动ID为 xxx 的剧本执行状态
+```
+
+4. **获取执行结果**：
+```
+获取活动ID为 xxx 的剧本执行详细结果
 ```
 
 ## 🔧 管理工具
@@ -321,46 +334,6 @@ sudo systemctl enable mcp-soar
 sudo systemctl start mcp-soar
 ```
 
-## API 文档
-
-### MCP 工具调用示例
-
-#### 执行安全剧本
-
-```python
-# 通过 AI 客户端调用
-"请执行钓鱼邮件响应剧本，处理邮件 attacker@evil.com"
-
-# MCP 工具调用
-{
-  "tool": "execute_playbook",
-  "arguments": {
-    "playbook_id": "phishing_response",
-    "params": [
-      {"key": "email", "value": "attacker@evil.com"}
-    ]
-  }
-}
-```
-
-#### 查询执行状态
-
-```python
-# 通过 AI 客户端调用
-"请查询剧本执行状态"
-
-# MCP 工具调用
-{
-  "tool": "get_execution_status",
-  "arguments": {
-    "instance_id": "1907203516548373"
-  }
-}
-```
-
-### REST API 接口
-
-详细的 REST API 文档请参考：[API 文档](docs/api.md)
 
 ## 测试
 
@@ -380,18 +353,15 @@ python mcp_soar_client.py
 
 ### 测试剧本执行
 
+使用 MCP 客户端工具进行测试：
+
 ```bash
-# 使用测试数据验证剧本执行
-curl -X POST http://localhost:12345/api/test/execute \
-  -H "Content-Type: application/json" \
-  -d '{
-    "eventId": 0,
-    "executorInstanceId": 1907203516548373,
-    "executorInstanceType": "PLAYBOOK",
-    "params": [
-      {"key": "src", "value": "15.197.148.33"}
-    ]
-  }'
+# 测试 MCP 连接
+cd tests
+python mcp_soar_client.py
+
+# 测试剧本执行功能
+python test_new_playbook_tools.py --playbook-id 1907203516548373
 ```
 
 ## 配置说明
@@ -478,34 +448,6 @@ tail -f logs/web_server.log
 tail -f logs/database.log
 ```
 
-## 贡献指南
-
-我们欢迎社区贡献！请阅读 [贡献指南](CONTRIBUTING.md) 了解详细信息。
-
-### 开发环境设置
-
-```bash
-# 安装开发依赖
-pip install -r requirements-dev.txt
-
-# 安装 pre-commit hooks
-pre-commit install
-
-# 运行代码格式化
-black .
-isort .
-
-# 运行类型检查
-mypy .
-```
-
-### 提交代码
-
-1. Fork 项目
-2. 创建功能分支：`git checkout -b feature/your-feature`
-3. 提交更改：`git commit -am 'Add some feature'`
-4. 推送分支：`git push origin feature/your-feature`
-5. 创建 Pull Request
 
 ## 许可证
 
