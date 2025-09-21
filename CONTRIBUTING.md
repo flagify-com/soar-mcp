@@ -211,7 +211,7 @@ python -m pytest --cov=.
 
 - GitHub Issues：问题报告和功能请求
 - GitHub Discussions：技术讨论和交流
-- 邮件：support@flagify.com
+- 邮件：code@wuzhi-ai.com
 
 ### 行为准则
 
