@@ -156,16 +156,22 @@ python3 soar_mcp_server.py
 
 1. **打开 Cherry Studio**
 2. **进入设置** → **MCP 服务器**
-3. **添加新服务器**：
+3. **编辑配置文件**，添加以下内容：
    ```json
    {
-     "name": "SOAR Security Platform",
-     "type": "http",
-     "url": "http://127.0.0.1:12345/mcp",
-     "description": "SOAR 安全编排平台集成"
+     "mcpServers": {
+       "soar": {
+         "type": "http",
+         "name": "SOAR Security Platform",
+         "description": "SOAR 安全编排平台集成",
+         "url": "http://127.0.0.1:12345/mcp?token=xxxx"
+       }
+     }
    }
    ```
-4. **保存并连接**
+4. **保存并重启 Cherry Studio**
+
+⚠️ **重要**：将 `token=xxxx` 替换为从管理后台获取的实际API Token
 
 #### Claude Desktop
 
@@ -180,24 +186,25 @@ python3 soar_mcp_server.py
 {
   "mcpServers": {
     "soar": {
-      "command": "python3",
-      "args": ["/absolute/path/to/mcp-server-soar/soar_mcp_server.py"],
-      "env": {
-        "PYTHONPATH": "/absolute/path/to/mcp-server-soar"
-      }
+      "type": "http",
+      "name": "SOAR Security Platform",
+      "description": "SOAR 安全编排平台集成",
+      "url": "http://127.0.0.1:12345/mcp?token=xxxx"
     }
   }
 }
 ```
 
-⚠️ **重要**：使用绝对路径，Claude Desktop 需要重启才能加载新配置
+⚠️ **重要**：
+- 将 `token=xxxx` 替换为从管理后台获取的实际API Token
+- Claude Desktop 需要重启才能加载新配置
 
 #### 其他 MCP 客户端
 
 **通用配置参数**：
-- **协议**: `Streamable HTTP`
-- **服务器 URL**: `http://127.0.0.1:12345/mcp`
-- **认证**: 无需额外认证头
+- **协议**: `HTTP`
+- **服务器 URL**: `http://127.0.0.1:12345/mcp?token=xxxx`
+- **认证**: 通过URL参数传递token
 
 ### 🧪 第四步：功能验证
 
