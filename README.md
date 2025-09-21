@@ -4,7 +4,7 @@
 
 ![SOAR MCP Server](static/logo.webp)
 
-基于 **Model Context Protocol (MCP)** 的 SOAR 平台集成服务器，为 Claude Desktop、Cherry Studio、Cursor、Trae 等 AI 客户端提供安全编排、自动化和响应能力。
+基于 **[OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation)** 的 **Model Context Protocol (MCP)** 服务器，为 Claude Desktop、Cherry Studio、Cursor、Trae 等 AI 客户端提供安全编排、自动化和响应能力。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
@@ -16,11 +16,20 @@
 
 ## 概述
 
-SOAR MCP Server 是一个创新的安全编排平台集成解决方案，通过 Model Context Protocol 将 SOAR (Security Orchestration, Automation and Response) 能力直接集成到各种 AI 客户端中，包括 Claude Desktop、Cherry Studio、Cursor、Trae 等。它提供了完整的安全事件管理、剧本执行、威胁情报查询等功能，让 AI 助手具备专业的网络安全响应能力。
+SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专为 [OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation) 设计**。通过 Model Context Protocol 将 SOAR (Security Orchestration, Automation and Response) 能力直接集成到各种 AI 客户端中，包括 Claude Desktop、Cherry Studio、Cursor、Trae 等。它提供了完整的安全事件管理、剧本执行、威胁情报查询等功能，让 AI 助手具备专业的网络安全响应能力。
+
+### 🎯 OctoMation SOAR 平台
+
+本项目专为 **[OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation)** 设计，OctoMation 是一个功能强大的开源安全编排、自动化和响应平台，提供：
+
+- 🛡️ **完整的安全工具链**：支持主流安全产品和平台
+- 📚 **丰富的安全剧本**：预置大量实用的安全响应剧本
+- 🔄 **灵活的工作流**：可视化剧本编排和自动化执行
+- 🌐 **开放架构**：支持自定义集成和扩展
 
 ### 核心优势
 
-- 🔒 **安全编排**：集成主流安全工具和平台
+- 🔒 **安全编排**：无缝对接 OctoMation SOAR 平台
 - 🤖 **AI 驱动**：通过多种 AI 客户端实现智能安全响应
 - ⚡ **实时响应**：快速处理安全事件和威胁
 - 🌐 **Web 管理**：直观的可视化管理界面
