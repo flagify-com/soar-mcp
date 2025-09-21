@@ -160,9 +160,9 @@ python3 soar_mcp_server.py
    ```json
    {
      "mcpServers": {
-       "soar": {
+       "soar-mcp": {
          "type": "http",
-         "name": "SOAR Security Platform",
+         "name": "soar-mcp",
          "description": "SOAR 安全编排平台集成",
          "url": "http://127.0.0.1:12345/mcp?token=xxxx"
        }
@@ -185,9 +185,9 @@ python3 soar_mcp_server.py
 ```json
 {
   "mcpServers": {
-    "soar": {
+    "soar-mcp": {
       "type": "http",
-      "name": "SOAR Security Platform",
+      "name": "soar-mcp",
       "description": "SOAR 安全编排平台集成",
       "url": "http://127.0.0.1:12345/mcp?token=xxxx"
     }
