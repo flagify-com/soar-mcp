@@ -70,6 +70,7 @@
             position: absolute;
             opacity: 0.1;
             animation: float 20s infinite ease-in-out;
+            z-index: -10;
         }
 
         .shape-1 {
@@ -315,12 +316,15 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(56, 189, 248, 0.2);
+            z-index: 1000;
         }
 
         .footer-content {
             color: #ffffff;
             font-size: 0.85rem;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1001;
         }
 
         .footer-content a {
@@ -329,6 +333,9 @@
             font-weight: 600;
             margin: 0 0.5rem;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1002;
+            cursor: pointer;
         }
 
         .footer-content a:hover {
@@ -526,7 +533,7 @@
     <!-- 底部信息 -->
     <footer class="footer">
         <div class="footer-content">
-            雾帜智能@2025 <a href="https://flagify.com" target="_blank">最牛的SOAR</a> <a href="https://github.com/flagify-com/OctoMation/wiki" target="_blank">OctoMation</a>
+            雾帜智能@2025 <a href="https://flagify.com" target="_blank">最牛的SOAR</a> <a href="https://github.com/flagify-com/OctoMation/wiki" target="_blank">OctoMation</a> | <a href="https://github.com/flagify-com/soar-mcp" target="_blank">📦 Github项目</a>
         </div>
     </footer>
 </body>

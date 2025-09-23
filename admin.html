@@ -30,12 +30,15 @@
         
         .header {
             background: transparent;
-            padding: 2rem 4rem;
+            padding: 1rem 2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 10;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         /* Header需要背景容器 */
@@ -75,39 +78,40 @@
 
         .header h1 {
             color: #f8fffe;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
+            margin: 0;
             text-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
         
         .nav {
-            margin-top: 0.5rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 1rem;
         }
 
         .nav-left {
             display: flex;
+            gap: 0.5rem;
         }
 
         .nav-right {
             display: flex;
+            gap: 0.5rem;
         }
         
         .nav-item {
             display: inline-block;
             color: #e8f5f3;
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            margin-right: 1rem;
-            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
             background: rgba(59, 130, 246, 0.15);
             border: 1px solid rgba(56, 189, 248, 0.2);
             transition: all 0.3s ease;
             font-weight: 500;
+            font-size: 0.85rem;
             backdrop-filter: blur(10px);
         }
 
@@ -219,12 +223,12 @@
         }
         
         .table th {
-            background: #3b82f6;
-            color: #ffffff;
+            background: #e0f2fe;
+            color: #0369a1;
             font-weight: 600;
             padding: 1rem 1.5rem;
             text-align: left;
-            border-bottom: 2px solid #2563eb;
+            border-bottom: 2px solid #0ea5e9;
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -529,20 +533,24 @@
         .footer-content {
             color: #ffffff;
             font-size: 0.9rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
         }
 
         .footer-content a {
-            color: #38bdf8;
+            color: #ffffff;
             text-decoration: none;
             font-weight: 600;
             margin: 0 0.5rem;
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .footer-content a:hover {
-            color: #14b8a6;
-            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+            color: #e0f2fe;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
         }
 
         @media (max-width: 768px) {
@@ -584,22 +592,18 @@
         
         /* 分页控件样式 */
         .pagination-container {
-            margin: 2rem 0;
+            margin: 1rem 0 0 0;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem;
+            background: transparent;
+            gap: 1rem;
         }
         
         .pagination-info {
             font-size: 0.9rem;
-            color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            color: #64748b;
         }
         
         .pagination-controls {
@@ -609,31 +613,28 @@
         }
         
         .pagination-btn {
-            padding: 0.6rem 1rem;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            background: rgba(239, 246, 255, 0.8);
-            color: #1e40af;
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            color: #374151;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             font-weight: 500;
-            backdrop-filter: blur(10px);
         }
 
         .pagination-btn:hover:not(:disabled) {
-            background: rgba(59, 130, 246, 0.15);
-            border-color: #14b8a6;
-            color: #1d4ed8;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-            transform: translateY(-1px);
+            background: #f3f4f6;
+            border-color: #3b82f6;
+            color: #3b82f6;
         }
 
         .pagination-btn:disabled {
-            background: rgba(156, 163, 175, 0.1);
+            background: #f9fafb;
             color: #9ca3af;
             cursor: not-allowed;
-            border-color: rgba(156, 163, 175, 0.3);
+            border-color: #e5e7eb;
         }
         
         .page-numbers {
@@ -2330,18 +2331,7 @@
             });
 
             // 为卡片添加悬浮效果
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', (e) => {
-                    e.target.style.transform = 'translateY(-8px)';
-                    e.target.style.boxShadow = '0 30px 80px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)';
-                });
-
-                card.addEventListener('mouseleave', (e) => {
-                    e.target.style.transform = 'translateY(0px)';
-                    e.target.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
-                });
-            });
+            // 已移除card悬停跳动动画，提升用户体验
 
             // 为按钮添加波纹效果
             const buttons = document.querySelectorAll('.btn, .nav-item');
@@ -2394,7 +2384,7 @@
     <!-- 底部信息 -->
     <footer class="footer">
         <div class="footer-content">
-            雾帜智能@2025 <a href="https://flagify.com" target="_blank">最牛的SOAR</a> <a href="https://github.com/flagify-com/OctoMation/wiki" target="_blank">OctoMation</a>
+            雾帜智能@2025 <a href="https://flagify.com" target="_blank">最牛的SOAR</a> <a href="https://github.com/flagify-com/OctoMation/wiki" target="_blank">OctoMation</a> | <a href="https://github.com/flagify-com/soar-mcp" target="_blank">📦 Github项目</a>
         </div>
     </footer>
 </body>

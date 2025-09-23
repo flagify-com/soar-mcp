@@ -11,8 +11,8 @@
 ### 2. 克隆代码
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mcp-server-soar.git
-cd mcp-server-soar
+git clone https://github.com/flagify-com/soar-mcp.git
+cd soar-mcp
 ```
 
 ### 3. 设置开发环境
@@ -163,7 +163,7 @@ python -m pytest --cov=.
 
 ### 报告 Bug
 
-使用 [GitHub Issues](https://github.com/flagify-com/mcp-server-soar/issues) 报告问题，请包含：
+使用 [GitHub Issues](https://github.com/flagify-com/soar-mcp/issues) 报告问题，请包含：
 
 1. **问题描述**：清晰描述遇到的问题
 2. **复现步骤**：详细的复现步骤

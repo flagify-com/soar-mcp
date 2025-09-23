@@ -39,6 +39,9 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ### 🛠️ MCP 工具集
 
+![SOAR MCP可用工具](docs/images/soar-mcp-available-tools.jpg)
+*SOAR MCP 服务器提供的完整工具集*
+
 #### 剧本查询与执行
 - `list_playbooks_quick` - 获取简洁的剧本列表（ID、name、displayName），适用于 AI 快速理解剧本选项
 - `query_playbook_execution_params` - 根据剧本ID查询执行所需的参数定义
@@ -56,6 +59,9 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 - `soar://playbooks` - SOAR 剧本列表
 
 ### 🌐 Web 管理界面
+
+![SOAR MCP服务器管理界面](docs/images/soar-mcp-server-playbook-management.jpg)
+*SOAR MCP 服务器 Web 管理界面 - 剧本管理页面*
 
 - **剧本管理**：可视化剧本列表、状态管理、执行监控
 - **Token 管理**：API 访问凭证的创建、管理和监控
@@ -163,6 +169,9 @@ python3 soar_mcp_server.py
 
 #### Cherry Studio（推荐）
 
+![Cherry Studio MCP配置](docs/images/saor-mcp-configure-in-cherry-studio.jpg)
+*在 Cherry Studio 中配置 SOAR MCP 服务器*
+
 1. **打开 Cherry Studio**
 2. **进入设置** → **MCP 服务器**
 3. **编辑配置文件**，添加以下内容：
@@ -179,6 +188,9 @@ python3 soar_mcp_server.py
    }
    ```
 4. **保存并重启 Cherry Studio**
+
+![Cherry Studio使用SOAR MCP](docs/images/use-soar-mcp-in-cherry-studio.jpg)
+*在 Cherry Studio 中成功使用 SOAR MCP 服务器功能*
 
 ⚠️ **重要**：将 `token=xxxx` 替换为从管理后台获取的实际API Token
 
