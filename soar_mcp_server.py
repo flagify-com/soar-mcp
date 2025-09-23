@@ -21,6 +21,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from fastmcp import FastMCP
 from dotenv import load_dotenv
+from version import __version__
 from models import DatabaseManager, db_manager
 from sync_service import PlaybookSyncService, AppsSyncService
 from logger_config import logger
@@ -33,6 +34,7 @@ load_dotenv()
 # 创建FastMCP应用 - 超简单！
 mcp = FastMCP(
     name="SOAR MCP Server",
+    version=__version__,
     instructions="SOAR (Security Orchestration, Automation and Response) 平台集成服务器，提供安全编排、自动化和响应功能。"
 )
 
