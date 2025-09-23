@@ -488,7 +488,7 @@ tail -f logs/database.log
 
 - 🐛 **问题反馈**：[GitHub Issues](https://github.com/flagify-com/mcp-server-soar/issues)
 - 💬 **讨论交流**：[GitHub Discussions](https://github.com/flagify-com/mcp-server-soar/discussions)
-- 📧 **邮件联系**：support@flagify.com
+- 📧 **邮件联系**：support@wuzhi-ai.com
 
 ## 致谢
 
