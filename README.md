@@ -137,6 +137,9 @@ python3 soar_mcp_server.py
 🎛️  管理后台: http://127.0.0.1:12346/admin
 ```
 
+![SOAR MCP服务器控制台启动界面](screenshots/admin_console.png)
+*SOAR MCP 服务器启动后的控制台输出界面*
+
 ### ⚙️ 第二步：SOAR 平台配置
 
 #### 1. 访问管理后台
