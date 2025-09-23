@@ -59,9 +59,9 @@ AI："正在执行IP信誉检查剧本，请稍候..."
 
 ---
 
-## 🛡️ OctoMation：开源安全编排平台
+## 🛡️ OctoMation：低代码编排自动化平台
 
-**SOAR MCP Server** 专为 [OctoMation](https://github.com/flagify-com/OctoMation) 平台设计。OctoMation 是由雾帜智能开发的功能强大的开源SOAR平台，具有以下特色：
+**SOAR MCP Server** 专为 [OctoMation](https://github.com/flagify-com/OctoMation) 平台（雾帜智能安全编排自动化与响应产品HoneyGuide SOAR的社区免费版））设计。OctoMation 是由雾帜智能开发的功能强大的SOAR平台，具有以下特色：
 
 ### 🏗️ **完整的安全工具生态**
 - 支持主流安全产品和平台集成

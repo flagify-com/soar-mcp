@@ -20,7 +20,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ### 🎯 OctoMation SOAR 平台
 
-本项目专为 **[OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation)** 设计，OctoMation 是一个功能强大的开源安全编排、自动化和响应平台，提供：
+本项目专为 **[OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation)** 设计，OctoMation 是一个功能强大的安全编排、自动化和响应平台，提供：
 
 - 🛡️ **完整的安全工具链**：支持主流安全产品和平台
 - 📚 **丰富的安全剧本**：预置大量实用的安全响应剧本
@@ -137,7 +137,7 @@ python3 soar_mcp_server.py
 🎛️  管理后台: http://127.0.0.1:12346/admin
 ```
 
-![SOAR MCP服务器控制台启动界面](screenshots/admin_console.png)
+![SOAR MCP服务器控制台启动界面](docs/images/admin_console.png)
 *SOAR MCP 服务器启动后的控制台输出界面*
 
 ### ⚙️ 第二步：SOAR 平台配置
