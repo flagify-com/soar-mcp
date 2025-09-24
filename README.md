@@ -90,12 +90,12 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ```bash
 # 克隆项目
-git clone https://github.com/flagify-com/mcp-server-soar.git
-cd mcp-server-soar
+git clone https://github.com/flagify-com/soar-mcp.git
+cd soar-mcp
 
 # 或直接下载发布版本
-wget https://github.com/flagify-com/mcp-server-soar/releases/latest/download/mcp-server-soar.zip
-unzip mcp-server-soar.zip && cd mcp-server-soar
+wget https://github.com/flagify-com/soar-mcp/releases/latest/download/soar-mcp.zip
+unzip soar-mcp.zip && cd soar-mcp
 ```
 
 #### 2. 环境配置
@@ -348,9 +348,9 @@ After=network.target
 [Service]
 Type=simple
 User=your-username
-WorkingDirectory=/path/to/mcp-server-soar
-Environment=PATH=/path/to/mcp-server-soar/venv/bin
-ExecStart=/path/to/mcp-server-soar/venv/bin/python soar_mcp_server.py
+WorkingDirectory=/path/to/soar-mcp
+Environment=PATH=/path/to/soar-mcp/venv/bin
+ExecStart=/path/to/soar-mcp/venv/bin/python soar_mcp_server.py
 Restart=always
 RestartSec=3
 
@@ -486,8 +486,8 @@ tail -f logs/database.log
 
 ## 支持与反馈
 
-- 🐛 **问题反馈**：[GitHub Issues](https://github.com/flagify-com/mcp-server-soar/issues)
-- 💬 **讨论交流**：[GitHub Discussions](https://github.com/flagify-com/mcp-server-soar/discussions)
+- 🐛 **问题反馈**：[GitHub Issues](https://github.com/flagify-com/soar-mcp/issues)
+- 💬 **讨论交流**：[GitHub Discussions](https://github.com/flagify-com/soar-mcp/discussions)
 - 📧 **邮件联系**：support@wuzhi-ai.com
 
 ## 致谢
