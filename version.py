@@ -3,12 +3,13 @@
 SOAR MCP Server 版本管理
 """
 
-__version__ = "1.0.0"
-__version_info__ = (1, 0, 0)
+__version__ = "1.0.1"
+__version_info__ = (1, 0, 1)
 
 # 版本说明
 VERSION_NOTES = {
-    "1.0.0": "首个稳定版本，支持SOAR剧本执行和MCP集成"
+    "1.0.0": "首个稳定版本，支持SOAR剧本执行和MCP集成",
+    "1.0.1": "修复统计页面最后同步时间显示问题和时区处理问题"
 }
 
 def get_version():

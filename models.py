@@ -687,38 +687,74 @@ class DatabaseManager:
             session.close()
     
     def get_last_sync_time(self) -> Optional[str]:
-        """获取最后同步时间（取剧本和应用中最新的同步时间）"""
-        session = self.get_session()
+        """获取最后同步时间（优先从系统配置获取全局同步时间，其次从数据表获取）"""
         try:
-            # 获取剧本最后同步时间
-            playbook_sync = session.query(PlaybookModel.sync_time).order_by(
-                PlaybookModel.sync_time.desc()
-            ).first()
-            
-            # 获取应用最后同步时间
-            app_sync = session.query(AppModel.sync_time).order_by(
-                AppModel.sync_time.desc()
-            ).first()
-            
-            playbook_time = playbook_sync[0] if playbook_sync else None
-            app_time = app_sync[0] if app_sync else None
-            
-            # 返回最新的时间
-            if playbook_time and app_time:
-                return max(playbook_time, app_time)
-            elif playbook_time:
-                return playbook_time
-            elif app_time:
-                return app_time
-            else:
-                return None
-                
+            # 首先尝试从系统配置获取最后同步时间
+            last_sync_config = self.get_system_config("last_sync_time")
+            if last_sync_config:
+                if isinstance(last_sync_config, str):
+                    try:
+                        # 尝试解析时间字符串
+                        last_sync_dt = datetime.fromisoformat(last_sync_config.replace("Z", "+00:00"))
+                        # 返回格式化的字符串，确保前端正确显示
+                        return last_sync_dt.strftime("%Y/%m/%d %H:%M:%S")
+                    except ValueError:
+                        pass  # 如果解析失败，继续使用旧方法
+                elif isinstance(last_sync_config, datetime):
+                    # 返回格式化的字符串，确保前端正确显示
+                    return last_sync_config.strftime("%Y/%m/%d %H:%M:%S")
+
+            # 如果系统配置中没有记录，则从数据表获取（兼容旧版本）
+            session = self.get_session()
+            try:
+                # 获取剧本最后同步时间
+                playbook_sync = session.query(PlaybookModel.sync_time).order_by(
+                    PlaybookModel.sync_time.desc()
+                ).first()
+
+                # 获取应用最后同步时间
+                app_sync = session.query(AppModel.sync_time).order_by(
+                    AppModel.sync_time.desc()
+                ).first()
+
+                playbook_time = playbook_sync[0] if playbook_sync else None
+                app_time = app_sync[0] if app_sync else None
+
+                # 返回最新的时间
+                latest_time = None
+                if playbook_time and app_time:
+                    latest_time = max(playbook_time, app_time)
+                elif playbook_time:
+                    latest_time = playbook_time
+                elif app_time:
+                    latest_time = app_time
+
+                # 如果有时间，格式化返回
+                if latest_time:
+                    return latest_time.strftime("%Y/%m/%d %H:%M:%S")
+                else:
+                    return None
+
+            finally:
+                session.close()
+
         except Exception as e:
             logger.error(f"获取最后同步时间失败: {e}")
             return None
-        finally:
-            session.close()
-    
+
+    def update_last_sync_time(self) -> bool:
+        """更新最后同步时间到系统配置"""
+        try:
+            current_time = datetime.now()
+            return self.set_system_config(
+                "last_sync_time",
+                current_time.isoformat(),
+                "最后一次数据同步的时间"
+            )
+        except Exception as e:
+            logger.error(f"更新最后同步时间失败: {e}")
+            return False
+
     def get_playbooks_admin(self, category: Optional[str] = None, limit: int = 1000) -> List[Dict]:
         """获取所有剧本列表（用于管理界面），包含启用状态
         注意：这里返回所有剧本，包括通过标签过滤同步进来的剧本

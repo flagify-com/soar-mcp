@@ -532,25 +532,27 @@
 
         .footer-content {
             color: #ffffff;
-            font-size: 0.9rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 0.85rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
             position: relative;
-            z-index: 1;
+            z-index: 1001;
+            font-weight: 500;
         }
 
         .footer-content a {
-            color: #ffffff;
+            color: #38bdf8;
             text-decoration: none;
             font-weight: 600;
             margin: 0 0.5rem;
             transition: all 0.3s ease;
             position: relative;
-            z-index: 1;
+            z-index: 1002;
+            cursor: pointer;
         }
 
         .footer-content a:hover {
-            color: #e0f2fe;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            color: #14b8a6;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
         }
 
         @media (max-width: 768px) {
@@ -2339,8 +2341,8 @@
                         
                         // 更新最后同步时间
                         if (data.stats.last_sync_time) {
-                            const lastSync = new Date(data.stats.last_sync_time).toLocaleString('zh-CN');
-                            document.getElementById('last-sync').textContent = lastSync;
+                            // 直接使用后端返回的格式化字符串，避免时区转换问题
+                            document.getElementById('last-sync').textContent = data.stats.last_sync_time;
                         }
                     }
                 })

@@ -323,13 +323,16 @@ class PlaybookSyncService:
             # 获取同步统计
             stats = self.db_manager.get_sync_stats()
             
+            # 更新最后同步时间到系统配置
+            self.db_manager.update_last_sync_time()
+
             result = {
                 "sync_time": datetime.now().isoformat(),
                 "source_count": len(playbooks),
                 "sync_result": sync_result,
                 "database_stats": stats
             }
-            
+
             logger.sync_success("剧本完整同步完成!")
             return result
             
@@ -519,14 +522,17 @@ class AppsSyncService:
             
             # 获取同步统计
             stats = self.db_manager.get_apps_stats()
-            
+
+            # 更新最后同步时间到系统配置
+            self.db_manager.update_last_sync_time()
+
             result = {
                 "sync_time": datetime.now().isoformat(),
                 "source_count": len(apps),
                 "sync_result": sync_result,
                 "database_stats": stats
             }
-            
+
             logger.sync_success("应用完整同步完成!")
             return result
             
