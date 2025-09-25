@@ -145,12 +145,12 @@ async def test_new_mcp_tools():
             print("   ⚠️  未获取到活动ID，跳过状态和结果查询测试")
             return
         
-        # 5. 测试 query_playbook_execution_status - 多次查询状态变化
-        print(f"\n5️⃣ 测试 query_playbook_execution_status - 查询执行状态 (活动ID: {activity_id})")
-        
+        # 5. 测试 query_status_by_activity_id - 多次查询状态变化
+        print(f"\n5️⃣ 测试 query_status_by_activity_id - 查询执行状态 (活动ID: {activity_id})")
+
         for i in range(3):
             print(f"   🔍 查询 #{i+1}:")
-            result = await client.call_tool("query_playbook_execution_status", {"activity_id": activity_id})
+            result = await client.call_tool("query_status_by_activity_id", {"activity_id": activity_id})
             if result:
                 data = json.loads(result)
                 print(f"      - 状态: {data.get('status')}")
@@ -163,14 +163,14 @@ async def test_new_mcp_tools():
                 print("      ⏳ 等待15秒...")
                 await asyncio.sleep(15)
         
-        # 6. 测试 query_playbook_execution_result
-        print(f"\n6️⃣ 测试 query_playbook_execution_result - 查询执行结果 (活动ID: {activity_id})")
-        
+        # 6. 测试 query_result_by_activity_id
+        print(f"\n6️⃣ 测试 query_result_by_activity_id - 查询执行结果 (活动ID: {activity_id})")
+
         # 等待执行完成
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
-        
-        result = await client.call_tool("query_playbook_execution_result", {"activity_id": activity_id})
+
+        result = await client.call_tool("query_result_by_activity_id", {"activity_id": activity_id})
         if result:
             data = json.loads(result)
             print(f"   📊 最终状态: {data.get('status')}")

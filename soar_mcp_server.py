@@ -848,26 +848,16 @@ def query_playbook_execution_params(playbook_id: Union[int, str]) -> str:
 @mcp.tool
 def execute_playbook(playbook_id: Union[int, str], parameters: Optional[dict] = None, event_id: int = 0) -> str:
     """
-    执行SOAR剧本 - 根据剧本ID执行剧本，支持参数传递
-
-    执行流程说明：
-    1. 首先通过 query_playbook_execution_params 获取剧本的参数定义
-    2. 根据参数定义调用本函数执行剧本
-    3. 执行成功后，返回活动ID
-    4. 使用 query_playbook_execution_status 检查执行状态
-    5. 当状态为SUCCESS后，使用 query_playbook_execution_result 查询详细结果
-
-    重要说明：剧本ID为LONG类型（64位整数），支持整数和字符串格式输入。
+    执行SOAR剧本
 
     Args:
-        playbook_id: 剧本ID，支持以下格式：
-            - LONG整数：11210381659280175
-            - 字符串整数："11210381659280175"
-        parameters: 执行参数字典（可选），格式为 {"参数名": "参数值"}，将转换为API所需的params格式
-        event_id: 事件ID（默认为0），用于关联执行上下文
+        playbook_id: 剧本ID，支持整数或字符串格式
+        parameters: 执行参数字典（可选），格式 {"参数名": "参数值"}
+        event_id: 事件ID（默认0）
 
     Returns:
-        执行提交结果，包含活动ID。使用活动ID可以查询执行状态和结果
+        返回包含activity_id的JSON，用此ID查询状态和结果
+        示例: {"success": true, "activity_id": "c1ca56df-9d64-4dbb-be0f-44ffdda62384"}
     """
     # Token验证
     if not verify_mcp_token(
@@ -942,20 +932,10 @@ def execute_playbook(playbook_id: Union[int, str], parameters: Optional[dict] = 
         
         logger.info(f"剧本执行启动成功，活动ID: {activity_id}")
         
-        # 构造返回结果
+        # 构造返回结果 - 简化结构，关键信息前置，与参数命名保持一致
         execution_result = {
             "success": True,
-            "activityId": activity_id,
-            "playbookId": playbook_id,
-            "playbookName": playbook.name,
-            "playbookDisplayName": playbook.display_name,
-            "eventId": event_id,
-            "parameters": parameters,
-            "apiRequest": api_request,  # 显示实际的API请求格式
-            "startTime": datetime.now().isoformat(),
-            "status": "SUBMITTED",
-            "message": "剧本执行已提交，请使用query_playbook_execution_status检查执行状态",
-            "apiResponse": api_result
+            "activity_id": activity_id  # 与MCP工具参数命名保持一致
         }
         
         # 存储执行记录（可选，用于历史查询）
@@ -975,19 +955,29 @@ def execute_playbook(playbook_id: Union[int, str], parameters: Optional[dict] = 
         return json.dumps(error_result, ensure_ascii=False, indent=2)
 
 @mcp.tool
-def query_playbook_execution_status(activity_id: str) -> str:
+def query_status_by_activity_id(activity_id: str) -> str:
     """
-    查询剧本执行状态 - 根据活动ID查询剧本执行状态
+    查询剧本执行状态
 
     Args:
-        activity_id: 活动ID，从execute_playbook返回结果中获取
+        activity_id: 活动ID，从execute_playbook返回的activity_id字段获取
+                    示例: "c1ca56df-9d64-4dbb-be0f-44ffdda62384"
 
     Returns:
-        执行状态信息，包含status字段，当status为SUCCESS时可以查询执行结果
+        返回执行状态，当status为SUCCESS时可查询结果
     """
+    # 参数验证 - 确保activity_id不为空
+    if not activity_id or activity_id.strip() == "":
+        return json.dumps({
+            "success": False,
+            "error": "❌ activity_id 参数不能为空！",
+            "help": "请从 execute_playbook 返回结果的 activity_id 字段中获取有效的活动ID",
+            "example": "正确的activity_id应该类似: 'c1ca56df-9d64-4dbb-be0f-44ffdda62384'"
+        }, ensure_ascii=False, indent=2)
+
     # Token验证
     if not verify_mcp_token(
-        action="query_playbook_execution_status",
+        action="query_status_by_activity_id",
         resource=f"soar://executions/{activity_id}/status",
         parameters={"activity_id": activity_id}
     ):
@@ -1027,25 +1017,29 @@ def query_playbook_execution_status(activity_id: str) -> str:
         
         logger.info(f"活动 {activity_id} 执行状态: {execution_status}")
         
-        # 构造返回结果
+        # 构造返回结果 - 关键信息前置
         status_result = {
             "success": True,
             "activityId": activity_id,
             "status": execution_status,
-            "executeStatus": execution_status,
-            "eventId": result_data.get('eventId'),
-            "executorInstanceId": result_data.get('executorInstanceId'), 
-            "executorInstanceName": result_data.get('executorInstanceName'),
-            "executorInstanceType": result_data.get('executorInstanceType'),
-            "createTime": result_data.get('createTime'),
-            "updateTime": result_data.get('updateTime'),
-            "postStatus": result_data.get('postStatus'),
-            "apiResponse": api_result,
+            "message": f"📊 执行状态: {execution_status}\n" + (
+                f"✅ 执行已完成！请使用活动ID {activity_id} 调用 query_result_by_activity_id 查询详细结果"
+                if execution_status == "SUCCESS"
+                else f"⏳ 执行进行中，请稍后使用活动ID {activity_id} 再次调用 query_status_by_activity_id 查询"
+            ),
             "queryTime": datetime.now().isoformat(),
-            "message": f"执行状态: {execution_status}" + (
-                "，可以使用query_playbook_execution_result查询详细结果" if execution_status == "SUCCESS" 
-                else "，执行尚未完成，请稍后再次查询"
-            )
+            # 详细信息放在details中
+            "details": {
+                "executeStatus": execution_status,
+                "eventId": result_data.get('eventId'),
+                "executorInstanceId": result_data.get('executorInstanceId'),
+                "executorInstanceName": result_data.get('executorInstanceName'),
+                "executorInstanceType": result_data.get('executorInstanceType'),
+                "createTime": result_data.get('createTime'),
+                "updateTime": result_data.get('updateTime'),
+                "postStatus": result_data.get('postStatus'),
+                "apiResponse": api_result
+            }
         }
         
         return json.dumps(status_result, ensure_ascii=False, indent=2)
@@ -1060,19 +1054,29 @@ def query_playbook_execution_status(activity_id: str) -> str:
         return json.dumps(error_result, ensure_ascii=False, indent=2)
 
 @mcp.tool
-def query_playbook_execution_result(activity_id: str) -> str:
+def query_result_by_activity_id(activity_id: str) -> str:
     """
-    查询剧本执行结果 - 根据活动ID查询剧本执行的详细结果
+    查询剧本执行详细结果
 
     Args:
-        activity_id: 活动ID，从execute_playbook返回结果中获取
+        activity_id: 活动ID，从execute_playbook返回的activity_id字段获取
+                    示例: "c1ca56df-9d64-4dbb-be0f-44ffdda62384"
 
     Returns:
-        详细的执行结果，包含执行的所有步骤、输出数据等信息
+        返回详细执行结果，建议先确认status为SUCCESS后调用
     """
+    # 参数验证 - 确保activity_id不为空
+    if not activity_id or activity_id.strip() == "":
+        return json.dumps({
+            "success": False,
+            "error": "❌ activity_id 参数不能为空！",
+            "help": "请从 execute_playbook 返回结果的 activity_id 字段中获取有效的活动ID",
+            "example": "正确的activity_id应该类似: 'c1ca56df-9d64-4dbb-be0f-44ffdda62384'"
+        }, ensure_ascii=False, indent=2)
+
     # Token验证
     if not verify_mcp_token(
-        action="query_playbook_execution_result",
+        action="query_result_by_activity_id",
         resource=f"soar://executions/{activity_id}/result",
         parameters={"activity_id": activity_id}
     ):
@@ -1108,13 +1112,13 @@ def query_playbook_execution_result(activity_id: str) -> str:
             raise Exception(f"API返回错误: {api_result}")
         
         logger.info(f"成功获取活动 {activity_id} 的执行结果")
-        
-        # 构造返回结果 - 直接返回完整的API响应
+
+        # 构造返回结果 - 关键信息前置
         result_info = {
             "success": True,
             "activityId": activity_id,
+            "message": f"✅ 成功获取剧本执行结果！\n📋 活动ID: {activity_id}\n📊 执行结果数据已包含在 executionResult 字段中",
             "queryTime": datetime.now().isoformat(),
-            "message": "成功获取剧本执行结果",
             "executionResult": api_result  # 包含完整的执行结果数据
         }
         

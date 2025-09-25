@@ -92,14 +92,14 @@ class RealAPITestClient:
             
             # 3. 查询执行状态
             print(f"\n🔍 步骤3: 查询执行状态")
-            status_result = self.call_tool("query_playbook_execution_status", activity_id=activity_id)
+            status_result = self.call_tool("query_status_by_activity_id", activity_id=activity_id)
             status_data = json.loads(status_result)
             print(f"✅ 执行状态: {json.dumps(status_data, indent=2, ensure_ascii=False)}")
             
             if status_data.get("success") and status_data.get("status") == "SUCCESS":
                 # 4. 查询执行结果
                 print(f"\n📊 步骤4: 查询执行结果")
-                result_result = self.call_tool("query_playbook_execution_result", activity_id=activity_id)
+                result_result = self.call_tool("query_result_by_activity_id", activity_id=activity_id)
                 result_data = json.loads(result_result)
                 print(f"✅ 执行结果: {json.dumps(result_data, indent=2, ensure_ascii=False)}")
             else:

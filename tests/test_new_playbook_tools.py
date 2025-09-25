@@ -185,17 +185,17 @@ class PlaybookToolsTestClient:
             print(f"❌ 测试异常: {e}")
             return None
     
-    async def test_query_playbook_execution_status(self, activity_id: str, query_count: int = 3) -> bool:
+    async def test_query_status_by_activity_id(self, activity_id: str, query_count: int = 3) -> bool:
         """测试5: 查询执行状态"""
         print("\n" + "="*60)
-        print(f"5️⃣ 测试 query_playbook_execution_status - 查询执行状态 (活动ID: {activity_id})")
+        print(f"5️⃣ 测试 query_status_by_activity_id - 查询执行状态 (活动ID: {activity_id})")
         
         try:
             success_count = 0
             for i in range(query_count):
                 print(f"\n🔍 查询 #{i+1}:")
                 
-                result = await self.call_tool("query_playbook_execution_status", activity_id=activity_id)
+                result = await self.call_tool("query_status_by_activity_id", activity_id=activity_id)
                 if result:
                     print(f"   - 状态: {result.get('status')}")
                     print(f"   - 消息: {result.get('message')}")
@@ -213,16 +213,16 @@ class PlaybookToolsTestClient:
             print(f"❌ 测试异常: {e}")
             return False
     
-    async def test_query_playbook_execution_result(self, activity_id: str) -> bool:
+    async def test_query_result_by_activity_id(self, activity_id: str) -> bool:
         """测试6: 查询执行结果"""
         print("\n" + "="*60)
-        print(f"6️⃣ 测试 query_playbook_execution_result - 查询执行结果 (活动ID: {activity_id})")
+        print(f"6️⃣ 测试 query_result_by_activity_id - 查询执行结果 (活动ID: {activity_id})")
         
         try:
             print("⏳ 等待剧本执行完成...")
             await asyncio.sleep(30)  # 等待执行完成
             
-            result = await self.call_tool("query_playbook_execution_result", activity_id=activity_id)
+            result = await self.call_tool("query_result_by_activity_id", activity_id=activity_id)
             if result:
                 print(f"📊 最终状态: {result.get('status')}")
                 print(f"🎯 剧本: {result.get('playbookName')}")
@@ -303,10 +303,10 @@ class PlaybookToolsTestClient:
             results["execution_data"]["activity_id"] = activity_id
             
             # 测试5: 查询执行状态
-            results["tests"]["query_playbook_execution_status"] = await self.test_query_playbook_execution_status(activity_id)
+            results["tests"]["query_status_by_activity_id"] = await self.test_query_status_by_activity_id(activity_id)
             
             # 测试6: 查询执行结果
-            results["tests"]["query_playbook_execution_result"] = await self.test_query_playbook_execution_result(activity_id)
+            results["tests"]["query_result_by_activity_id"] = await self.test_query_result_by_activity_id(activity_id)
             
         finally:
             await self.disconnect()
@@ -325,8 +325,8 @@ class PlaybookToolsTestClient:
             "list_playbooks_detailed": "获取详细剧本列表",
             "query_playbook_execution_params": "查询剧本执行参数",
             "execute_playbook_advanced": "执行剧本",
-            "query_playbook_execution_status": "查询执行状态",
-            "query_playbook_execution_result": "查询执行结果"
+            "query_status_by_activity_id": "查询执行状态",
+            "query_result_by_activity_id": "查询执行结果"
         }
         
         for test_name, result in results["tests"].items():
@@ -391,14 +391,14 @@ async def main():
                     await client.test_execute_playbook_advanced(args.playbook_id)
                 else:
                     print("❌ 需要指定 --playbook-id 参数")
-            elif args.tool == "query_playbook_execution_status":
+            elif args.tool == "query_status_by_activity_id":
                 if args.activity_id:
-                    await client.test_query_playbook_execution_status(args.activity_id, 1)
+                    await client.test_query_status_by_activity_id(args.activity_id, 1)
                 else:
                     print("❌ 需要指定 --activity-id 参数")
-            elif args.tool == "query_playbook_execution_result":
+            elif args.tool == "query_result_by_activity_id":
                 if args.activity_id:
-                    await client.test_query_playbook_execution_result(args.activity_id)
+                    await client.test_query_result_by_activity_id(args.activity_id)
                 else:
                     print("❌ 需要指定 --activity-id 参数")
             else:

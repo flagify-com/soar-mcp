@@ -53,7 +53,7 @@ async def test_real_execute():
             print(f"\n🔍 查询执行状态，活动ID: {activity_id}")
             
             status_result = await client.client.call_tool(
-                "query_playbook_execution_status",
+                "query_status_by_activity_id",
                 arguments={"activity_id": activity_id}
             )
             
@@ -68,7 +68,7 @@ async def test_real_execute():
                 print(f"\n📊 查询执行结果，活动ID: {activity_id}")
                 
                 result_result = await client.client.call_tool(
-                    "query_playbook_execution_result",
+                    "query_result_by_activity_id",
                     arguments={"activity_id": activity_id}
                 )
                 
