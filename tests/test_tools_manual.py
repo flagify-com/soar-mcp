@@ -149,7 +149,7 @@ def execute_playbook_advanced_logic(event_id: str, playbook_id: int, parameters:
             "error": f"执行剧本失败: {str(e)}"
         }, ensure_ascii=False, indent=2)
 
-def query_status_by_activity_id_logic(activity_id: str) -> str:
+def query_playbook_execution_status_by_activity_id_logic(activity_id: str) -> str:
     """实现query_status_by_activity_id的逻辑"""
     try:
         if activity_id not in MOCK_EXECUTIONS:
@@ -191,7 +191,7 @@ def query_status_by_activity_id_logic(activity_id: str) -> str:
             "error": f"查询执行状态失败: {str(e)}"
         }, ensure_ascii=False, indent=2)
 
-def query_result_by_activity_id_logic(activity_id: str) -> str:
+def query_playbook_execution_result_by_activity_id_logic(activity_id: str) -> str:
     """实现query_result_by_activity_id的逻辑"""
     try:
         if activity_id not in MOCK_EXECUTIONS:
@@ -343,7 +343,7 @@ async def test_all_tools():
 
         for i in range(3):
             print(f"   🔍 查询 #{i+1}:")
-            result = query_status_by_activity_id_logic(activity_id)
+            result = query_playbook_execution_status_by_activity_id_logic(activity_id)
             data = json.loads(result)
             if "error" not in data:
                 print(f"      - 状态: {data.get('status')}")
@@ -363,7 +363,7 @@ async def test_all_tools():
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
 
-        result = query_result_by_activity_id_logic(activity_id)
+        result = query_playbook_execution_result_by_activity_id_logic(activity_id)
         data = json.loads(result)
         if "error" not in data:
             print(f"   📊 最终状态: {data.get('status')}")

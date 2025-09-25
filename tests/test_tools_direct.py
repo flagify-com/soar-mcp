@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
 """
-直接测试MCP工具函数
-通过直接调用工具函数来验证功能
+直接测试MCP工具函数 - 已弃用
+这个测试文件依赖不存在的函数，请使用其他测试文件：
+- test_new_mcp_tools.py: 基于HTTP的MCP客户端测试
+- test_new_playbook_tools.py: 基于FastMCP的客户端测试
+- test_real_api.py: 真实API集成测试
 """
 
-import json
-import asyncio
-from datetime import datetime
-
-# 导入服务器模块
-from simple_mcp_server import (
-    list_playbooks_quick,
-    list_playbooks_detailed, 
-    query_playbook_execution_params,
-    execute_playbook_advanced,
-    query_status_by_activity_id,
-    query_result_by_activity_id
-)
+print("⚠️  此测试文件已弃用，请使用其他测试文件")
+print("📝 可用的测试文件:")
+print("   - test_new_mcp_tools.py")
+print("   - test_new_playbook_tools.py")
+print("   - test_real_api.py")
+exit(0)
 
 async def test_tools_directly():
     """直接测试工具函数"""
@@ -116,7 +112,7 @@ async def test_tools_directly():
 
         for i in range(3):
             print(f"   🔍 查询 #{i+1}:")
-            result = query_status_by_activity_id(activity_id=activity_id)
+            result = query_playbook_execution_status_by_activity_id(activity_id=activity_id)
             if result:
                 data = json.loads(result)
                 print(f"      - 状态: {data.get('status')}")
@@ -136,7 +132,7 @@ async def test_tools_directly():
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
 
-        result = query_result_by_activity_id(activity_id=activity_id)
+        result = query_playbook_execution_result_by_activity_id(activity_id=activity_id)
         if result:
             data = json.loads(result)
             print(f"   📊 最终状态: {data.get('status')}")

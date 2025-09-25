@@ -955,7 +955,7 @@ def execute_playbook(playbook_id: Union[int, str], parameters: Optional[dict] = 
         return json.dumps(error_result, ensure_ascii=False, indent=2)
 
 @mcp.tool
-def query_status_by_activity_id(activity_id: str) -> str:
+def query_playbook_execution_status_by_activity_id(activity_id: str) -> str:
     """
     查询剧本执行状态
 
@@ -977,7 +977,7 @@ def query_status_by_activity_id(activity_id: str) -> str:
 
     # Token验证
     if not verify_mcp_token(
-        action="query_status_by_activity_id",
+        action="query_playbook_execution_status_by_activity_id",
         resource=f"soar://executions/{activity_id}/status",
         parameters={"activity_id": activity_id}
     ):
@@ -1023,9 +1023,9 @@ def query_status_by_activity_id(activity_id: str) -> str:
             "activityId": activity_id,
             "status": execution_status,
             "message": f"📊 执行状态: {execution_status}\n" + (
-                f"✅ 执行已完成！请使用活动ID {activity_id} 调用 query_result_by_activity_id 查询详细结果"
+                f"✅ 执行已完成！请使用活动ID {activity_id} 调用 query_playbook_execution_result_by_activity_id 查询详细结果"
                 if execution_status == "SUCCESS"
-                else f"⏳ 执行进行中，请稍后使用活动ID {activity_id} 再次调用 query_status_by_activity_id 查询"
+                else f"⏳ 执行进行中，请稍后使用活动ID {activity_id} 再次调用 query_playbook_execution_status_by_activity_id 查询"
             ),
             "queryTime": datetime.now().isoformat(),
             # 详细信息放在details中
@@ -1054,7 +1054,7 @@ def query_status_by_activity_id(activity_id: str) -> str:
         return json.dumps(error_result, ensure_ascii=False, indent=2)
 
 @mcp.tool
-def query_result_by_activity_id(activity_id: str) -> str:
+def query_playbook_execution_result_by_activity_id(activity_id: str) -> str:
     """
     查询剧本执行详细结果
 
@@ -1076,7 +1076,7 @@ def query_result_by_activity_id(activity_id: str) -> str:
 
     # Token验证
     if not verify_mcp_token(
-        action="query_result_by_activity_id",
+        action="query_playbook_execution_result_by_activity_id",
         resource=f"soar://executions/{activity_id}/result",
         parameters={"activity_id": activity_id}
     ):
@@ -1397,7 +1397,7 @@ if __name__ == "__main__":
     logger.info("📊 MCP协议:")
     logger.info(f"  🔗 URL: http://127.0.0.1:{port}/ (带token: http://127.0.0.1:{port}/?token=your_token)")
     logger.info("🛠️  剧本管理: list_playbooks_quick, query_playbook_execution_params")
-    logger.info("🚀 剧本执行: execute_playbook (真实API调用), query_status_by_activity_id, query_result_by_activity_id")
+    logger.info("🚀 剧本执行: execute_playbook (真实API调用), query_playbook_execution_status_by_activity_id, query_playbook_execution_result_by_activity_id")
     logger.info("📋 资源: soar://applications, soar://playbooks, soar://executions")
     logger.info("")
     logger.info("🎛️  管理后台:")
