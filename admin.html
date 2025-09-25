@@ -1202,6 +1202,12 @@
                     <button class="close" onclick="closeShowTokenModal()">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                        <div style="color: #dc2626; font-weight: 600; font-size: 0.9rem;">
+                            ⚠️ 重要提示：请立即复制并保存以下信息，关闭窗口后将无法再次查看完整Token！
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Token值</label>
                         <div class="password-input-container">
@@ -1210,13 +1216,27 @@
                                 <span>📋</span>
                             </button>
                         </div>
-                        <small class="form-help" style="color: #e53e3e; font-weight: 600;">
-                            请立即复制并保存此Token值，关闭窗口后将无法再次查看完整Token！
+                        <small class="form-help">
+                            用于API认证的访问令牌
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>完整MCP URL (Streamable HTTP)</label>
+                        <div class="password-input-container">
+                            <input type="text" id="new-mcp-url" class="form-input" readonly>
+                            <button type="button" class="password-toggle" onclick="copyMcpUrlToClipboard()">
+                                <span>📋</span>
+                            </button>
+                        </div>
+                        <small class="form-help">
+                            Streamable HTTP类型的MCP服务器URL，可直接用于Claude Desktop、Cherry Studio等MCP客户端配置
                         </small>
                     </div>
 
                     <div class="config-actions">
                         <button type="button" class="btn btn-primary" onclick="copyTokenToClipboard()">复制Token</button>
+                        <button type="button" class="btn btn-primary" onclick="copyMcpUrlToClipboard()">复制MCP URL</button>
                         <button type="button" class="btn btn-secondary" onclick="closeShowTokenModal()">关闭</button>
                     </div>
                 </div>
@@ -1446,10 +1466,92 @@
             alert.textContent = message;
             alertContainer.innerHTML = '';
             alertContainer.appendChild(alert);
-            
+
             setTimeout(() => {
                 alert.remove();
             }, 3000);
+        }
+
+        // 显示增强的复制成功提醒
+        function showCopySuccessAlert(message) {
+            // 创建特殊的复制成功提醒框
+            const copyAlert = document.createElement('div');
+            copyAlert.className = 'copy-success-alert';
+            copyAlert.innerHTML = `
+                <div class="copy-success-content">
+                    <span class="copy-success-icon">✅</span>
+                    <span class="copy-success-text">${message}</span>
+                </div>
+            `;
+
+            // 添加样式
+            copyAlert.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 1.5rem 2rem;
+                border-radius: 16px;
+                box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4),
+                           0 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(10px);
+                animation: copySuccessAnimation 0.6s ease-out;
+                min-width: 300px;
+                text-align: center;
+            `;
+
+            // 添加动画样式
+            if (!document.getElementById('copy-success-style')) {
+                const style = document.createElement('style');
+                style.id = 'copy-success-style';
+                style.textContent = `
+                    @keyframes copySuccessAnimation {
+                        0% {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(0.8);
+                        }
+                        50% {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1.05);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1);
+                        }
+                    }
+                    .copy-success-content {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 0.75rem;
+                    }
+                    .copy-success-icon {
+                        font-size: 1.5rem;
+                    }
+                    .copy-success-text {
+                        font-size: 1rem;
+                        font-weight: 600;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            // 添加到页面并自动移除
+            document.body.appendChild(copyAlert);
+
+            setTimeout(() => {
+                copyAlert.style.animation = 'copySuccessAnimation 0.3s ease-out reverse';
+                setTimeout(() => {
+                    if (copyAlert.parentNode) {
+                        copyAlert.remove();
+                    }
+                }, 300);
+            }, 2000);
         }
         
         // 格式化日期
@@ -2136,6 +2238,12 @@
 
                     // 显示新创建的Token值
                     document.getElementById('new-token-value').value = result.token;
+
+                    // 生成完整的MCP URL
+                    const currentHost = window.location.host;
+                    const mcpUrl = `http://${currentHost.replace(':12346', ':12345')}/mcp?token=${result.token}`;
+                    document.getElementById('new-mcp-url').value = mcpUrl;
+
                     document.getElementById('show-token-modal').style.display = 'block';
 
                     // 重新加载Token列表
@@ -2153,6 +2261,7 @@
         function closeShowTokenModal() {
             document.getElementById('show-token-modal').style.display = 'none';
             document.getElementById('new-token-value').value = '';
+            document.getElementById('new-mcp-url').value = '';
         }
 
         // 复制Token到剪贴板
@@ -2160,12 +2269,26 @@
             const tokenInput = document.getElementById('new-token-value');
             try {
                 await navigator.clipboard.writeText(tokenInput.value);
-                showAlert('Token已复制到剪贴板', 'success');
+                showCopySuccessAlert('Token已复制到剪贴板');
             } catch (error) {
                 // 兼容旧浏览器
                 tokenInput.select();
                 document.execCommand('copy');
-                showAlert('Token已复制到剪贴板', 'success');
+                showCopySuccessAlert('Token已复制到剪贴板');
+            }
+        }
+
+        // 复制MCP URL到剪贴板
+        async function copyMcpUrlToClipboard() {
+            const mcpUrlInput = document.getElementById('new-mcp-url');
+            try {
+                await navigator.clipboard.writeText(mcpUrlInput.value);
+                showCopySuccessAlert('MCP URL已复制到剪贴板');
+            } catch (error) {
+                // 兼容旧浏览器
+                mcpUrlInput.select();
+                document.execCommand('copy');
+                showCopySuccessAlert('MCP URL已复制到剪贴板');
             }
         }
 
