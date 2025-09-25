@@ -340,7 +340,7 @@ async def test_all_tools():
         
         # 5. 测试 query_status_by_activity_id - 多次查询状态变化
         print(f"\n5️⃣ 测试 query_status_by_activity_id - 查询执行状态 (活动ID: {activity_id})")
-        
+
         for i in range(3):
             print(f"   🔍 查询 #{i+1}:")
             result = query_status_by_activity_id_logic(activity_id)
@@ -358,11 +358,11 @@ async def test_all_tools():
         
         # 6. 测试 query_result_by_activity_id
         print(f"\n6️⃣ 测试 query_result_by_activity_id - 查询执行结果 (活动ID: {activity_id})")
-        
+
         # 等待执行完成
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
-        
+
         result = query_result_by_activity_id_logic(activity_id)
         data = json.loads(result)
         if "error" not in data:

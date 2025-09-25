@@ -156,8 +156,8 @@ echo "┌───────────────────────�
 echo "│  • list_playbooks_quick           - 快速获取剧本列表                            │"
 echo "│  • query_playbook_execution_params - 查询剧本执行参数                          │"
 echo "│  • execute_playbook              - 执行 SOAR 剧本                             │"
-echo "│  • query_playbook_execution_status - 查询剧本执行状态                          │"
-echo "│  • query_playbook_execution_result - 查询剧本执行结果                          │"
+echo "│  • query_status_by_activity_id   - 查询剧本执行状态                          │"
+echo "│  • query_result_by_activity_id   - 查询剧本执行结果                          │"
 echo "└────────────────────────────────────────────────────────────────────────────────┘"
 
 echo ""

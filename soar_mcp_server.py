@@ -1397,7 +1397,7 @@ if __name__ == "__main__":
     logger.info("📊 MCP协议:")
     logger.info(f"  🔗 URL: http://127.0.0.1:{port}/ (带token: http://127.0.0.1:{port}/?token=your_token)")
     logger.info("🛠️  剧本管理: list_playbooks_quick, query_playbook_execution_params")
-    logger.info("🚀 剧本执行: execute_playbook (真实API调用), query_playbook_execution_status, query_playbook_execution_result")
+    logger.info("🚀 剧本执行: execute_playbook (真实API调用), query_status_by_activity_id, query_result_by_activity_id")
     logger.info("📋 资源: soar://applications, soar://playbooks, soar://executions")
     logger.info("")
     logger.info("🎛️  管理后台:")

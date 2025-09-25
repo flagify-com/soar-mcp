@@ -29,8 +29,8 @@ The system runs **two servers simultaneously**:
 - `list_playbooks_quick` - Get concise playbook list (ID, name, displayName)
 - `query_playbook_execution_params` - Get playbook parameter definitions
 - `execute_playbook` - Execute SOAR playbooks with parameters
-- `query_playbook_execution_status` - Check execution status by activity ID
-- `query_playbook_execution_result` - Get detailed execution results
+- `query_status_by_activity_id` - Check execution status by activity ID
+- `query_result_by_activity_id` - Get detailed execution results
 
 ### Key Technical Details
 

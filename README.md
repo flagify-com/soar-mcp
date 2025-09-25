@@ -46,8 +46,8 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 - `list_playbooks_quick` - 获取简洁的剧本列表（ID、name、displayName），适用于 AI 快速理解剧本选项
 - `query_playbook_execution_params` - 根据剧本ID查询执行所需的参数定义
 - `execute_playbook` - 执行指定的 SOAR 剧本，支持参数传递
-- `query_playbook_execution_status` - 根据活动ID查询剧本执行状态
-- `query_playbook_execution_result` - 根据活动ID查询剧本执行的详细结果
+- `query_status_by_activity_id` - 根据活动ID查询剧本执行状态
+- `query_result_by_activity_id` - 根据活动ID查询剧本执行的详细结果
 
 #### 重要说明
 - **剧本ID格式**：支持 LONG 类型（64位整数），可以使用整数或字符串格式
