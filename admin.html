@@ -1302,7 +1302,7 @@
                     <div class="form-group">
                         <div class="label-row">
                             <label for="label-input">剧本抓取标签</label>
-                            <small class="form-help">用于过滤同步的剧本标签，至少需要一个标签</small>
+                            <small class="form-help">默认标签：MCP，如果不设置标签，则同步后台所有剧本（适合社区免费版OctoMation）</small>
                         </div>
                         <div class="labels-container">
                             <div class="labels-input">
@@ -2002,8 +2002,8 @@
             // 如果是打码格式，则不包含Token字段，后端会保持原有Token
             
             // 验证必填项
-            if (!apiUrl || !apiToken || !timeout || labels.length === 0) {
-                showAlert('请填写所有必填项并至少添加一个标签', 'error');
+            if (!apiUrl || !apiToken || !timeout) {
+                showAlert('请填写所有必填项', 'error');
                 saveBtn.disabled = false;
                 saveBtn.textContent = '保存配置';
                 return;
@@ -2091,9 +2091,9 @@
                     const labelsList = document.getElementById('labels-list');
                     labelsList.innerHTML = '';
                     
-                    const labels = data.data.soar_labels && Array.isArray(data.data.soar_labels) 
-                        ? data.data.soar_labels 
-                        : ['MCP']; // 默认显示MCP标签
+                    const labels = data.data.soar_labels && Array.isArray(data.data.soar_labels)
+                        ? data.data.soar_labels
+                        : ["MCP"]; // 默认MCP标签
                     
                     labels.forEach(label => {
                         const labelElement = document.createElement('div');
@@ -2108,7 +2108,7 @@
             } catch (error) {
                 console.error('加载系统配置失败:', error);
                 showAlert('加载系统配置失败', 'error');
-                
+
                 // 即使加载失败，也显示默认的MCP标签
                 const labelsList = document.getElementById('labels-list');
                 labelsList.innerHTML = '';

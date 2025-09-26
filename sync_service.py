@@ -78,11 +78,14 @@ class SOARAPIClient:
         url = urljoin(self.base_url, "/odp/core/v1/api/playbook/findAll")
         
         try:
-            # 构建请求体，包含发布状态和标签过滤
+            # 构建请求体，包含发布状态，如果有标签则添加标签过滤
             request_body = {
-                "publishStatus": "ONLINE",
-                "labelList": [{"name": label} for label in self.labels]
+                "publishStatus": "ONLINE"
             }
+
+            # 只有当标签列表不为空时才添加 labelList 参数
+            if self.labels:
+                request_body["labelList"] = [{"name": label} for label in self.labels]
             
             logger.sync_debug(f"剧本查询请求: URL={url}, Body={request_body}")
             

@@ -135,8 +135,7 @@ class ConfigManager:
         if config.sync_interval <= 0:
             issues.append("同步周期必须大于0")
 
-        if not config.soar_labels:
-            issues.append("至少需要一个标签")
+        # 标签列表可以为空（表示同步所有标签）
 
         # URL格式检查
         if config.soar_api_url and not (config.soar_api_url.startswith('http://') or config.soar_api_url.startswith('https://')):
@@ -208,9 +207,12 @@ class ConfigManager:
             # 测试连接
             test_url = f"{config.soar_api_url.rstrip('/')}/odp/core/v1/api/playbook/findAll"
             test_data = {
-                "publishStatus": "ONLINE",
-                "labelList": [{"name": label} for label in config.soar_labels[:1]]  # 只测试第一个标签
+                "publishStatus": "ONLINE"
             }
+
+            # 只有当标签列表不为空时才添加标签过滤（测试时使用第一个标签）
+            if config.soar_labels:
+                test_data["labelList"] = [{"name": label} for label in config.soar_labels[:1]]
             
             response = requests.post(
                 test_url,
