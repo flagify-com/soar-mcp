@@ -20,7 +20,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ## 🏗️ 系统架构
 
-![SOAR MCP Server System Architecture](docs/system-architecture.svg)
+![SOAR MCP Server System Architecture](docs/system-architecture.png)
 
 *SOAR MCP Server 采用双服务器架构设计，包含 MCP 服务器、Web 管理服务器、业务逻辑层、数据存储层和外部系统集成层，提供完整的安全编排自动化解决方案。*
 
