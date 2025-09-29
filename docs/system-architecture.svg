@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Define gradients -->
+    <!-- 定义渐变色 -->
     <linearGradient id="clientGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#45a049;stop-opacity:1" />
@@ -23,69 +23,69 @@
       <stop offset="100%" style="stop-color:#C2185B;stop-opacity:1" />
     </linearGradient>
 
-    <!-- Define shadow filter -->
+    <!-- 定义阴影滤镜 -->
     <filter id="dropshadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="3" dy="3" stdDeviation="3" flood-color="#00000030"/>
     </filter>
   </defs>
 
-  <!-- Background -->
+  <!-- 背景 -->
   <rect width="1200" height="800" fill="#f8f9fa" stroke="none"/>
 
-  <!-- Title -->
+  <!-- 标题 -->
   <text x="600" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">
-    SOAR MCP Server System Architecture
+    SOAR MCP Server 系统总体架构图
   </text>
 
-  <!-- Client Layer -->
+  <!-- 客户端层 -->
   <g transform="translate(50, 70)">
     <rect x="0" y="0" width="1100" height="100" fill="url(#clientGradient)" rx="10" filter="url(#dropshadow)"/>
     <text x="550" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-      Client Layer
+      客户端层 (Client Layer)
     </text>
 
-    <!-- AI clients -->
+    <!-- AI客户端 -->
     <g transform="translate(50, 35)">
       <rect x="0" y="0" width="150" height="50" fill="white" rx="5" stroke="#4CAF50" stroke-width="2"/>
       <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Claude Desktop</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Cherry Studio</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">/ Cherry Studio</text>
     </g>
 
     <g transform="translate(250, 35)">
       <rect x="0" y="0" width="150" height="50" fill="white" rx="5" stroke="#4CAF50" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Other MCP Clients</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">其他 MCP 客户端</text>
       <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">(AI Applications)</text>
     </g>
 
     <g transform="translate(750, 35)">
       <rect x="0" y="0" width="150" height="50" fill="white" rx="5" stroke="#4CAF50" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Web Administrator</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Web 管理员</text>
       <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">(Admin Portal)</text>
     </g>
 
     <g transform="translate(950, 35)">
       <rect x="0" y="0" width="100" height="50" fill="white" rx="5" stroke="#4CAF50" stroke-width="2"/>
       <text x="50" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">REST API</text>
-      <text x="50" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">Clients</text>
+      <text x="50" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#333">客户端</text>
     </g>
   </g>
 
-  <!-- Connection lines: Client to Server Layer -->
+  <!-- 连接线：客户端到服务器层 -->
   <line x1="175" y1="170" x2="175" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <line x1="375" y1="170" x2="375" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <line x1="875" y1="170" x2="875" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <line x1="1050" y1="170" x2="1050" y2="200" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-  <!-- Dual Server Layer -->
+  <!-- 双服务器层 -->
   <g transform="translate(50, 200)">
-    <!-- MCP Server -->
+    <!-- MCP服务器 -->
     <g transform="translate(0, 0)">
       <rect x="0" y="0" width="500" height="120" fill="url(#mcpGradient)" rx="10" filter="url(#dropshadow)"/>
       <text x="250" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-        MCP Server (Port: 12345)
+        MCP 服务器 (端口: 12345)
       </text>
 
-      <!-- MCP tools -->
+      <!-- MCP工具 -->
       <g transform="translate(20, 35)">
         <rect x="0" y="0" width="120" height="30" fill="white" rx="3" stroke="#2196F3" stroke-width="1"/>
         <text x="60" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">list_playbooks_quick</text>
@@ -103,39 +103,39 @@
 
       <g transform="translate(410, 35)">
         <rect x="0" y="0" width="70" height="30" fill="white" rx="3" stroke="#2196F3" stroke-width="1"/>
-        <text x="35" y="15" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">More Tools</text>
+        <text x="35" y="15" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">更多工具</text>
         <text x="35" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#333">...</text>
       </g>
 
       <text x="250" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">
-        FastMCP Framework - Standard MCP Protocol
+        基于 FastMCP 框架实现标准 MCP 协议
       </text>
       <text x="250" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">
-        Security Orchestration for AI Clients
+        提供 AI 客户端安全编排能力
       </text>
     </g>
 
-    <!-- Web Management Server -->
+    <!-- Web管理服务器 -->
     <g transform="translate(550, 0)">
       <rect x="0" y="0" width="500" height="120" fill="url(#webGradient)" rx="10" filter="url(#dropshadow)"/>
       <text x="250" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-        Web Management Server (Port: 12346)
+        Web 管理服务器 (端口: 12346)
       </text>
 
-      <!-- Web features -->
+      <!-- Web功能 -->
       <g transform="translate(20, 35)">
         <rect x="0" y="0" width="100" height="30" fill="white" rx="3" stroke="#FF9800" stroke-width="1"/>
-        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Configuration</text>
+        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">配置管理</text>
       </g>
 
       <g transform="translate(130, 35)">
         <rect x="0" y="0" width="100" height="30" fill="white" rx="3" stroke="#FF9800" stroke-width="1"/>
-        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Dashboard</text>
+        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">监控仪表板</text>
       </g>
 
       <g transform="translate(240, 35)">
         <rect x="0" y="0" width="100" height="30" fill="white" rx="3" stroke="#FF9800" stroke-width="1"/>
-        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">Log Viewer</text>
+        <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#333">日志查看</text>
       </g>
 
       <g transform="translate(350, 35)">
@@ -144,170 +144,170 @@
       </g>
 
       <text x="250" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">
-        Flask Framework - Web Management Interface
+        基于 Flask 框架提供 Web 管理界面
       </text>
       <text x="250" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">
-        System Configuration, Monitoring & Operations
+        系统配置、监控和运维管理
       </text>
     </g>
   </g>
 
-  <!-- Connection lines: Server to Business Logic Layer -->
+  <!-- 连接线：服务器层到业务逻辑层 -->
   <line x1="300" y1="320" x2="300" y2="360" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <line x1="800" y1="320" x2="800" y2="360" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-  <!-- Business Logic Layer -->
+  <!-- 业务逻辑层 -->
   <g transform="translate(50, 360)">
     <rect x="0" y="0" width="1100" height="120" fill="url(#dataGradient)" rx="10" filter="url(#dropshadow)"/>
     <text x="550" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-      Business Logic Layer
+      业务逻辑层 (Business Logic Layer)
     </text>
 
-    <!-- Core components -->
+    <!-- 核心组件 -->
     <g transform="translate(50, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Authentication</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">JWT Auth</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Access Control</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Audit Logs</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">认证授权模块</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">JWT 认证</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">权限控制</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">审计日志</text>
     </g>
 
     <g transform="translate(220, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Playbook Manager</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Playbook Query</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Parameter Mgmt</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Lifecycle</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">剧本管理器</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">剧本查询</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">参数管理</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">生命周期</text>
     </g>
 
     <g transform="translate(390, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Execution Engine</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Playbook Exec</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Status Monitor</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Result Handler</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">执行引擎</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">剧本执行</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">状态监控</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">结果处理</text>
     </g>
 
     <g transform="translate(560, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Sync Service</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Incremental Sync</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Scheduled Tasks</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Data Validation</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">同步服务</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">增量同步</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">定时任务</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">数据验证</text>
     </g>
 
     <g transform="translate(730, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Config Manager</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Persistence</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Dynamic Config</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Cache Mgmt</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">配置管理器</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">配置持久化</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">动态配置</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">缓存管理</text>
     </g>
 
     <g transform="translate(900, 35)">
       <rect x="0" y="0" width="150" height="70" fill="white" rx="5" stroke="#9C27B0" stroke-width="2"/>
-      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Logger</text>
-      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Log Recording</text>
-      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Log Analysis</text>
-      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Alert Monitor</text>
+      <text x="75" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">日志管理器</text>
+      <text x="75" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">日志记录</text>
+      <text x="75" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">日志分析</text>
+      <text x="75" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">告警监控</text>
     </g>
   </g>
 
-  <!-- Connection lines: Business Logic to Data & External Systems -->
+  <!-- 连接线：业务逻辑层到数据层和外部系统 -->
   <line x1="400" y1="480" x2="400" y2="520" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
   <line x1="800" y1="480" x2="800" y2="520" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
 
-  <!-- Data Storage Layer -->
+  <!-- 数据存储层 -->
   <g transform="translate(50, 520)">
     <rect x="0" y="0" width="450" height="100" fill="#6c757d" rx="10" filter="url(#dropshadow)"/>
     <text x="225" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-      Data Storage Layer
+      数据存储层 (Data Layer)
     </text>
 
     <g transform="translate(50, 35)">
       <rect x="0" y="0" width="100" height="50" fill="white" rx="5" stroke="#6c757d" stroke-width="2"/>
       <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">SQLite</text>
-      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(Default)</text>
+      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(默认)</text>
     </g>
 
     <g transform="translate(175, 35)">
       <rect x="0" y="0" width="100" height="50" fill="white" rx="5" stroke="#6c757d" stroke-width="2"/>
       <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">PostgreSQL</text>
-      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(Optional)</text>
+      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(可选)</text>
     </g>
 
     <g transform="translate(300, 35)">
       <rect x="0" y="0" width="100" height="50" fill="white" rx="5" stroke="#6c757d" stroke-width="2"/>
       <text x="50" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#333">MySQL</text>
-      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(Optional)</text>
+      <text x="50" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">(可选)</text>
     </g>
   </g>
 
-  <!-- External Systems Layer -->
+  <!-- 外部系统层 -->
   <g transform="translate(550, 520)">
     <rect x="0" y="0" width="550" height="100" fill="url(#soarGradient)" rx="10" filter="url(#dropshadow)"/>
     <text x="275" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
-      External Systems Layer
+      外部系统层 (External Systems)
     </text>
 
     <g transform="translate(50, 35)">
       <rect x="0" y="0" width="200" height="50" fill="white" rx="5" stroke="#E91E63" stroke-width="2"/>
       <text x="100" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">OctoMation SOAR</text>
-      <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Security Orchestration Platform</text>
+      <text x="100" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">安全编排自动化响应平台</text>
     </g>
 
     <g transform="translate(300, 35)">
       <rect x="0" y="0" width="180" height="50" fill="white" rx="5" stroke="#E91E63" stroke-width="2"/>
-      <text x="90" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">Security Tools</text>
-      <text x="90" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">Threat Detection & Response</text>
+      <text x="90" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333">第三方安全工具</text>
+      <text x="90" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666">威胁检测、响应工具等</text>
     </g>
   </g>
 
-  <!-- Protocol Annotations -->
+  <!-- 协议标注 -->
   <g transform="translate(50, 650)">
-    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Communication Protocols:</text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">通信协议:</text>
 
-    <g transform="translate(180, 0)">
+    <g transform="translate(120, 0)">
       <line x1="0" y1="15" x2="30" y2="15" stroke="#2196F3" stroke-width="3"/>
-      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">MCP Protocol (Model Context Protocol)</text>
+      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">MCP 协议 (Model Context Protocol)</text>
     </g>
 
-    <g transform="translate(450, 0)">
+    <g transform="translate(350, 0)">
       <line x1="0" y1="15" x2="30" y2="15" stroke="#FF9800" stroke-width="3"/>
       <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">HTTP/HTTPS REST API</text>
     </g>
 
-    <g transform="translate(650, 0)">
+    <g transform="translate(600, 0)">
       <line x1="0" y1="15" x2="30" y2="15" stroke="#E91E63" stroke-width="3"/>
-      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">SOAR API Interface</text>
+      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">SOAR API 接口</text>
     </g>
 
-    <g transform="translate(850, 0)">
+    <g transform="translate(800, 0)">
       <line x1="0" y1="15" x2="30" y2="15" stroke="#6c757d" stroke-width="3"/>
-      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">Database Connection</text>
+      <text x="40" y="20" font-family="Arial, sans-serif" font-size="12" fill="#333">数据库连接</text>
     </g>
   </g>
 
-  <!-- Core Features -->
+  <!-- 技术特性标注 -->
   <g transform="translate(50, 690)">
-    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Core Features:</text>
-    <text x="120" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Dual Server Architecture</text>
-    <text x="280" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Async Processing</text>
-    <text x="400" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Smart Sync</text>
-    <text x="500" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Security Auth</text>
-    <text x="600" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Multi-DB Support</text>
-    <text x="730" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• Standard MCP Protocol</text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">核心特性:</text>
+    <text x="120" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 双服务器架构</text>
+    <text x="250" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 异步处理</text>
+    <text x="350" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 智能同步</text>
+    <text x="450" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 安全认证</text>
+    <text x="550" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 多数据库支持</text>
+    <text x="680" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">• 标准 MCP 协议</text>
   </g>
 
-  <!-- Port Information -->
+  <!-- 端口信息 -->
   <g transform="translate(50, 720)">
-    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">Service Ports:</text>
-    <text x="120" y="20" font-family="Arial, sans-serif" font-size="12" fill="#2196F3">MCP Server: 12345</text>
-    <text x="260" y="20" font-family="Arial, sans-serif" font-size="12" fill="#FF9800">Web Management: 12346</text>
-    <text x="420" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">Access: http://127.0.0.1:12345/mcp?token=xxxx</text>
+    <text x="0" y="20" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">服务端口:</text>
+    <text x="120" y="20" font-family="Arial, sans-serif" font-size="12" fill="#2196F3">MCP 服务器: 12345</text>
+    <text x="280" y="20" font-family="Arial, sans-serif" font-size="12" fill="#FF9800">Web 管理: 12346</text>
+    <text x="450" y="20" font-family="Arial, sans-serif" font-size="12" fill="#666">访问示例: http://127.0.0.1:12345/mcp?token=xxxx</text>
   </g>
 
-  <!-- Define arrow marker -->
+  <!-- 定义箭头标记 -->
   <defs>
     <marker id="arrowhead" markerWidth="10" markerHeight="7"
             refX="9" refY="3.5" orient="auto">
@@ -315,15 +315,15 @@
     </marker>
   </defs>
 
-  <!-- Data flow arrows -->
-  <!-- MCP data flow -->
+  <!-- 数据流向箭头 -->
+  <!-- MCP 数据流 -->
   <path d="M 175 190 Q 175 150 300 190" stroke="#2196F3" stroke-width="2" fill="none"
         stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
-  <text x="220" y="160" font-family="Arial, sans-serif" font-size="10" fill="#2196F3">MCP Request</text>
+  <text x="220" y="160" font-family="Arial, sans-serif" font-size="10" fill="#2196F3">MCP 请求</text>
 
-  <!-- Sync data flow -->
+  <!-- 同步数据流 -->
   <path d="M 635 360 Q 700 340 635 520" stroke="#E91E63" stroke-width="2" fill="none"
         stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
-  <text x="650" y="430" font-family="Arial, sans-serif" font-size="10" fill="#E91E63">Sync</text>
+  <text x="650" y="430" font-family="Arial, sans-serif" font-size="10" fill="#E91E63">同步</text>
 
 </svg>
