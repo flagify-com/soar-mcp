@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="1000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 定义渐变色 -->
+    <linearGradient id="tableGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3367d6;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="fieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e8eaed;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ea4335;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d33b2c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="fkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34a853;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d9a43;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- 定义阴影滤镜 -->
+    <filter id="dropshadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#00000040"/>
+    </filter>
+
+    <!-- 定义箭头标记 -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7"
+            refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1400" height="1000" fill="#fafbfc" stroke="none"/>
+
+  <!-- 标题 -->
+  <text x="700" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#1a73e8">
+    SOAR MCP Server 数据模型 ER 图
+  </text>
+  <text x="700" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#5f6368">
+    Entity Relationship Diagram - 实体关系图
+  </text>
+
+  <!-- PlaybookModel 表 -->
+  <g transform="translate(50, 100)">
+    <rect x="0" y="0" width="300" height="280" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="300" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="300" height="8" fill="url(#tableGradient)"/>
+    <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      📋 playbooks
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <!-- Primary Key -->
+      <rect x="0" y="0" width="280" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <!-- 其他字段 -->
+      <rect x="0" y="25" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">name</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255) NOT NULL</text>
+
+      <rect x="0" y="45" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="10" fill="#333">display_name</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255)</text>
+
+      <rect x="0" y="65" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="77" font-family="Monaco, monospace" font-size="10" fill="#333">playbook_category</text>
+      <text x="130" y="77" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100)</text>
+
+      <rect x="0" y="85" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="97" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="97" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT</text>
+
+      <rect x="0" y="105" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="117" font-family="Monaco, monospace" font-size="10" fill="#333">create_time</text>
+      <text x="100" y="117" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="125" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="137" font-family="Monaco, monospace" font-size="10" fill="#333">update_time</text>
+      <text x="100" y="137" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="145" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="157" font-family="Monaco, monospace" font-size="10" fill="#333">remote_update_time</text>
+      <text x="140" y="157" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="165" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="177" font-family="Monaco, monospace" font-size="10" fill="#333">playbook_params</text>
+      <text x="120" y="177" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT (JSON)</text>
+
+      <rect x="0" y="185" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="197" font-family="Monaco, monospace" font-size="10" fill="#333">sync_time</text>
+      <text x="100" y="197" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="205" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="217" font-family="Monaco, monospace" font-size="10" fill="#333">enabled</text>
+      <text x="100" y="217" font-family="Monaco, monospace" font-size="9" fill="#666">BOOLEAN</text>
+    </g>
+  </g>
+
+  <!-- AppModel 表 -->
+  <g transform="translate(400, 100)">
+    <rect x="0" y="0" width="300" height="220" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="300" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="300" height="8" fill="url(#tableGradient)"/>
+    <text x="150" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      📱 apps
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <!-- Primary Key -->
+      <rect x="0" y="0" width="280" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <rect x="0" y="25" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">name</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255) NOT NULL</text>
+
+      <rect x="0" y="45" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT</text>
+
+      <rect x="0" y="65" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="77" font-family="Monaco, monospace" font-size="10" fill="#333">version</text>
+      <text x="100" y="77" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100)</text>
+
+      <rect x="0" y="85" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="97" font-family="Monaco, monospace" font-size="10" fill="#333">category</text>
+      <text x="100" y="97" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100)</text>
+
+      <rect x="0" y="105" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="117" font-family="Monaco, monospace" font-size="10" fill="#333">update_time</text>
+      <text x="100" y="117" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="125" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="137" font-family="Monaco, monospace" font-size="10" fill="#333">remote_update_time</text>
+      <text x="140" y="137" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="145" width="280" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="157" font-family="Monaco, monospace" font-size="10" fill="#333">require_asset</text>
+      <text x="110" y="157" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(10)</text>
+
+      <rect x="0" y="165" width="280" height="18" fill="white" rx="2"/>
+      <text x="10" y="177" font-family="Monaco, monospace" font-size="10" fill="#333">sync_time</text>
+      <text x="100" y="177" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+    </g>
+  </g>
+
+  <!-- ActionModel 表 -->
+  <g transform="translate(750, 100)">
+    <rect x="0" y="0" width="320" height="280" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="320" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="320" height="8" fill="url(#tableGradient)"/>
+    <text x="160" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      ⚡ actions
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <!-- Primary Key -->
+      <rect x="0" y="0" width="300" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <!-- Foreign Key -->
+      <rect x="0" y="25" width="300" height="20" fill="url(#fkGradient)" rx="3"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔗 app_id</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="10" fill="white">BIGINT FK</text>
+
+      <rect x="0" y="50" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="62" font-family="Monaco, monospace" font-size="10" fill="#333">name</text>
+      <text x="100" y="62" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255) NOT NULL</text>
+
+      <rect x="0" y="70" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="82" font-family="Monaco, monospace" font-size="10" fill="#333">display_name</text>
+      <text x="100" y="82" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255)</text>
+
+      <rect x="0" y="90" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="102" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="102" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT</text>
+
+      <rect x="0" y="110" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="122" font-family="Monaco, monospace" font-size="10" fill="#333">action_type</text>
+      <text x="100" y="122" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(50)</text>
+
+      <rect x="0" y="130" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="142" font-family="Monaco, monospace" font-size="10" fill="#333">classify</text>
+      <text x="100" y="142" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(50)</text>
+
+      <rect x="0" y="150" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="162" font-family="Monaco, monospace" font-size="10" fill="#333">logic_language</text>
+      <text x="120" y="162" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(50)</text>
+
+      <rect x="0" y="170" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="182" font-family="Monaco, monospace" font-size="10" fill="#333">parameter_variables</text>
+      <text x="150" y="182" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT (JSON)</text>
+
+      <rect x="0" y="190" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="202" font-family="Monaco, monospace" font-size="10" fill="#333">result_variables</text>
+      <text x="130" y="202" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT (JSON)</text>
+
+      <rect x="0" y="210" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="222" font-family="Monaco, monospace" font-size="10" fill="#333">sync_time</text>
+      <text x="100" y="222" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+    </g>
+  </g>
+
+  <!-- SystemConfigModel 表 -->
+  <g transform="translate(50, 420)">
+    <rect x="0" y="0" width="280" height="180" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="280" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="280" height="8" fill="url(#tableGradient)"/>
+    <text x="140" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      ⚙️ system_config
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <rect x="0" y="0" width="260" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <rect x="0" y="25" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">key</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100) UNIQUE</text>
+
+      <rect x="0" y="45" width="260" height="18" fill="white" rx="2"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="10" fill="#333">value</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT NOT NULL</text>
+
+      <rect x="0" y="65" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="77" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="77" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(500)</text>
+
+      <rect x="0" y="85" width="260" height="18" fill="white" rx="2"/>
+      <text x="10" y="97" font-family="Monaco, monospace" font-size="10" fill="#333">created_time</text>
+      <text x="100" y="97" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="105" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="117" font-family="Monaco, monospace" font-size="10" fill="#333">updated_time</text>
+      <text x="100" y="117" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+    </g>
+  </g>
+
+  <!-- AdminPasswordModel 表 -->
+  <g transform="translate(370, 420)">
+    <rect x="0" y="0" width="280" height="180" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="280" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="280" height="8" fill="url(#tableGradient)"/>
+    <text x="140" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      🔐 admin_passwords
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <rect x="0" y="0" width="260" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <rect x="0" y="25" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">password_hash</text>
+      <text x="110" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(200)</text>
+
+      <rect x="0" y="45" width="260" height="18" fill="white" rx="2"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(500)</text>
+
+      <rect x="0" y="65" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="77" font-family="Monaco, monospace" font-size="10" fill="#333">is_active</text>
+      <text x="100" y="77" font-family="Monaco, monospace" font-size="9" fill="#666">BOOLEAN</text>
+
+      <rect x="0" y="85" width="260" height="18" fill="white" rx="2"/>
+      <text x="10" y="97" font-family="Monaco, monospace" font-size="10" fill="#333">created_time</text>
+      <text x="100" y="97" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="105" width="260" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="117" font-family="Monaco, monospace" font-size="10" fill="#333">updated_time</text>
+      <text x="100" y="117" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+    </g>
+  </g>
+
+  <!-- UserTokenModel 表 -->
+  <g transform="translate(690, 420)">
+    <rect x="0" y="0" width="320" height="260" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="320" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="320" height="8" fill="url(#tableGradient)"/>
+    <text x="160" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      🎫 user_tokens
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <rect x="0" y="0" width="300" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <rect x="0" y="25" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">token</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100) UNIQUE</text>
+
+      <rect x="0" y="45" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="10" fill="#333">name</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(255) NOT NULL</text>
+
+      <rect x="0" y="65" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="77" font-family="Monaco, monospace" font-size="10" fill="#333">description</text>
+      <text x="100" y="77" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(500)</text>
+
+      <rect x="0" y="85" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="97" font-family="Monaco, monospace" font-size="10" fill="#333">is_active</text>
+      <text x="100" y="97" font-family="Monaco, monospace" font-size="9" fill="#666">BOOLEAN</text>
+
+      <rect x="0" y="105" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="117" font-family="Monaco, monospace" font-size="10" fill="#333">permissions</text>
+      <text x="100" y="117" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT</text>
+
+      <rect x="0" y="125" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="137" font-family="Monaco, monospace" font-size="10" fill="#333">usage_count</text>
+      <text x="100" y="137" font-family="Monaco, monospace" font-size="9" fill="#666">INTEGER</text>
+
+      <rect x="0" y="145" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="157" font-family="Monaco, monospace" font-size="10" fill="#333">created_at</text>
+      <text x="100" y="157" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="165" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="177" font-family="Monaco, monospace" font-size="10" fill="#333">expires_at</text>
+      <text x="100" y="177" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <rect x="0" y="185" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="197" font-family="Monaco, monospace" font-size="10" fill="#333">last_used_at</text>
+      <text x="100" y="197" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+    </g>
+  </g>
+
+  <!-- AuditLogModel 表 -->
+  <g transform="translate(1050, 420)">
+    <rect x="0" y="0" width="320" height="300" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <!-- 表头 -->
+    <rect x="0" y="0" width="320" height="40" fill="url(#tableGradient)" rx="8"/>
+    <rect x="0" y="32" width="320" height="8" fill="url(#tableGradient)"/>
+    <text x="160" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">
+      📊 audit_logs
+    </text>
+
+    <!-- 字段列表 -->
+    <g transform="translate(10, 50)">
+      <rect x="0" y="0" width="300" height="20" fill="url(#pkGradient)" rx="3"/>
+      <circle cx="10" cy="10" r="3" fill="white"/>
+      <text x="20" y="14" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 id</text>
+      <text x="100" y="14" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER PK</text>
+
+      <rect x="0" y="25" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="37" font-family="Monaco, monospace" font-size="10" fill="#333">timestamp</text>
+      <text x="100" y="37" font-family="Monaco, monospace" font-size="9" fill="#666">DATETIME</text>
+
+      <!-- Foreign Key reference -->
+      <rect x="0" y="45" width="300" height="20" fill="url(#fkGradient)" rx="3"/>
+      <text x="10" y="57" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔗 token_id</text>
+      <text x="100" y="57" font-family="Monaco, monospace" font-size="10" fill="white">INTEGER FK</text>
+
+      <rect x="0" y="70" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="82" font-family="Monaco, monospace" font-size="10" fill="#333">token_name</text>
+      <text x="100" y="82" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100)</text>
+
+      <rect x="0" y="90" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="102" font-family="Monaco, monospace" font-size="10" fill="#333">action</text>
+      <text x="100" y="102" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(100) NOT NULL</text>
+
+      <rect x="0" y="110" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="122" font-family="Monaco, monospace" font-size="10" fill="#333">resource</text>
+      <text x="100" y="122" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(200)</text>
+
+      <rect x="0" y="130" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="142" font-family="Monaco, monospace" font-size="10" fill="#333">parameters</text>
+      <text x="100" y="142" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT (JSON)</text>
+
+      <rect x="0" y="150" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="162" font-family="Monaco, monospace" font-size="10" fill="#333">result</text>
+      <text x="100" y="162" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(50)</text>
+
+      <rect x="0" y="170" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="182" font-family="Monaco, monospace" font-size="10" fill="#333">error_message</text>
+      <text x="110" y="182" font-family="Monaco, monospace" font-size="9" fill="#666">TEXT</text>
+
+      <rect x="0" y="190" width="300" height="18" fill="white" rx="2"/>
+      <text x="10" y="202" font-family="Monaco, monospace" font-size="10" fill="#333">ip_address</text>
+      <text x="100" y="202" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(45)</text>
+
+      <rect x="0" y="210" width="300" height="18" fill="url(#fieldGradient)" rx="2"/>
+      <text x="10" y="222" font-family="Monaco, monospace" font-size="10" fill="#333">user_agent</text>
+      <text x="100" y="222" font-family="Monaco, monospace" font-size="9" fill="#666">VARCHAR(500)</text>
+    </g>
+  </g>
+
+  <!-- 外键关系连线 -->
+  <!-- apps 到 actions 的关系 -->
+  <path d="M 700 210 Q 720 210 750 210" stroke="#34a853" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="720" y="200" font-family="Arial, sans-serif" font-size="12" fill="#34a853" font-weight="bold">1:N</text>
+
+  <!-- user_tokens 到 audit_logs 的关系 -->
+  <path d="M 1010 550 Q 1030 550 1050 550" stroke="#34a853" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="1025" y="540" font-family="Arial, sans-serif" font-size="12" fill="#34a853" font-weight="bold">1:N</text>
+
+  <!-- 图例 -->
+  <g transform="translate(50, 730)">
+    <rect x="0" y="0" width="400" height="120" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <text x="200" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1a73e8">
+      图例说明
+    </text>
+
+    <!-- 主键图例 -->
+    <rect x="20" y="30" width="100" height="18" fill="url(#pkGradient)" rx="3"/>
+    <circle cx="30" cy="39" r="3" fill="white"/>
+    <text x="40" y="43" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔑 主键 (PK)</text>
+
+    <!-- 外键图例 -->
+    <rect x="140" y="30" width="100" height="18" fill="url(#fkGradient)" rx="3"/>
+    <text x="150" y="43" font-family="Monaco, monospace" font-size="11" font-weight="bold" fill="white">🔗 外键 (FK)</text>
+
+    <!-- 普通字段图例 -->
+    <rect x="20" y="55" width="100" height="18" fill="url(#fieldGradient)" rx="2"/>
+    <text x="30" y="68" font-family="Monaco, monospace" font-size="10" fill="#333">📝 普通字段</text>
+
+    <!-- 关系线图例 -->
+    <line x1="150" y1="64" x2="180" y2="64" stroke="#34a853" stroke-width="3" marker-end="url(#arrowhead)"/>
+    <text x="190" y="68" font-family="Arial, sans-serif" font-size="12" fill="#34a853">外键关系</text>
+
+    <!-- 数据类型说明 -->
+    <text x="20" y="85" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • JSON: 存储JSON格式数据的TEXT字段
+    </text>
+    <text x="20" y="100" font-family="Arial, sans-serif" font-size="11" fill="#666">
+      • UNIQUE: 具有唯一约束的字段
+    </text>
+  </g>
+
+  <!-- 数据库特性说明 -->
+  <g transform="translate(500, 730)">
+    <rect x="0" y="0" width="450" height="120" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <text x="225" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1a73e8">
+      数据库特性
+    </text>
+
+    <text x="20" y="40" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">🗄️ 多数据库支持:</tspan> SQLite (默认) / PostgreSQL / MySQL
+    </text>
+    <text x="20" y="55" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">🔄 同步机制:</tspan> 支持增量同步，基于 remote_update_time 字段
+    </text>
+    <text x="20" y="70" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">📚 索引优化:</tspan> 关键查询字段已添加数据库索引
+    </text>
+    <text x="20" y="85" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">🔐 安全特性:</tspan> 密码哈希存储、令牌管理、审计日志
+    </text>
+    <text x="20" y="100" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">📊 数据完整性:</tspan> 外键约束确保数据关联一致性
+    </text>
+  </g>
+
+  <!-- 表关系说明 -->
+  <g transform="translate(1000, 730)">
+    <rect x="0" y="0" width="350" height="120" fill="white" rx="8" stroke="#dadce0" stroke-width="2" filter="url(#dropshadow)"/>
+
+    <text x="175" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1a73e8">
+      表关系说明
+    </text>
+
+    <text x="20" y="40" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">apps → actions:</tspan> 一对多关系
+    </text>
+    <text x="20" y="55" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      每个应用可以包含多个动作
+    </text>
+
+    <text x="20" y="75" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      <tspan font-weight="bold">user_tokens → audit_logs:</tspan> 一对多关系
+    </text>
+    <text x="20" y="90" font-family="Arial, sans-serif" font-size="12" fill="#333">
+      每个令牌可以产生多条审计日志
+    </text>
+
+    <text x="20" y="110" font-family="Arial, sans-serif" font-size="12" fill="#666">
+      <tspan font-style="italic">独立表: playbooks, system_config, admin_passwords</tspan>
+    </text>
+  </g>
+
+  <!-- 版本信息 -->
+  <text x="1350" y="980" text-anchor="end" font-family="Arial, sans-serif" font-size="10" fill="#999">
+    SOAR MCP Server v1.0 - Database Schema
+  </text>
+
+</svg>
