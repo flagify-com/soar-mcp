@@ -6,7 +6,6 @@ SOAR 剧本同步服务
 
 import asyncio
 import json
-import ssl
 import time
 from datetime import datetime
 from typing import List, Optional, Dict, Any
@@ -23,8 +22,7 @@ from config_manager import config_manager
 # 加载环境变量
 load_dotenv()
 
-# SSL设置
-ssl._create_default_https_context = ssl._create_unverified_context
+# 注意：不再全局覆盖 SSL 上下文，SSL 验证通过各 HTTP 客户端实例单独配置
 
 
 class SOARAPIClient:

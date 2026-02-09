@@ -306,7 +306,7 @@ def get_admin_playbooks():
         logger.error(f"获取管理剧本列表失败: {e}")
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": "获取剧本列表时发生内部错误"
         }), 500
 
 @admin_app.route('/api/admin/playbooks/<string:playbook_id>')
@@ -334,7 +334,7 @@ def get_playbook_detail(playbook_id):
         logger.error(f"获取剧本详情失败: {e}")
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": "获取剧本详情时发生内部错误"
         }), 500
 
 @admin_app.route('/api/admin/playbooks/<string:playbook_id>/toggle', methods=['POST'])
@@ -367,7 +367,7 @@ def toggle_playbook(playbook_id):
         logger.error(f"切换剧本状态失败: {e}")
         return jsonify({
             "success": False,
-            "error": str(e)
+            "error": "切换剧本状态时发生内部错误"
         }), 500
 
 
@@ -393,7 +393,7 @@ def get_system_config():
         })
     except Exception as e:
         logger.error(f"获取系统配置失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "获取配置时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/config', methods=['POST'])
@@ -512,7 +512,7 @@ def update_system_config():
 
     except Exception as e:
         logger.error(f"更新系统配置失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "更新配置时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/config/validate', methods=['POST'])
@@ -522,27 +522,20 @@ def validate_system_config():
     try:
         from config_manager import config_manager
         
-        # 如果请求中有配置数据，先临时更新再验证
+        config_data = None
         if request.is_json:
             data = request.get_json()
             if data:
                 from models import SystemConfigData
                 try:
                     config_data = SystemConfigData(**data)
-                    # 临时更新配置用于验证（不保存到数据库）
-                    config_manager._config_cache.update({
-                        'soar_api_url': config_data.soar_api_url,
-                        'soar_api_token': config_data.soar_api_token,
-                        'soar_timeout': config_data.soar_timeout,
-                        'soar_labels': config_data.soar_labels
-                    })
                 except Exception as e:
                     return jsonify({
                         "success": False,
                         "error": f"配置数据格式错误: {e}"
                     }), 400
         
-        validation_result = config_manager.validate_config()
+        validation_result = config_manager.validate_config(config_data)
         
         return jsonify({
             "success": True,
@@ -551,7 +544,7 @@ def validate_system_config():
         
     except Exception as e:
         logger.error(f"验证系统配置失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "验证配置时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/config/test', methods=['POST'])
@@ -561,27 +554,20 @@ def test_connection():
     try:
         from config_manager import config_manager
         
-        # 如果请求中有配置数据，先临时更新再测试
+        config_data = None
         if request.is_json:
             data = request.get_json()
             if data:
                 from models import SystemConfigData
                 try:
                     config_data = SystemConfigData(**data)
-                    # 临时更新配置用于测试（不保存到数据库）
-                    config_manager._config_cache.update({
-                        'soar_api_url': config_data.soar_api_url,
-                        'soar_api_token': config_data.soar_api_token,
-                        'soar_timeout': config_data.soar_timeout,
-                        'soar_labels': config_data.soar_labels
-                    })
                 except Exception as e:
                     return jsonify({
                         "success": False,
                         "error": f"配置数据格式错误: {e}"
                     }), 400
         
-        test_result = config_manager.test_connection()
+        test_result = config_manager.test_connection(config_data)
         
         return jsonify({
             "success": True,
@@ -590,7 +576,7 @@ def test_connection():
         
     except Exception as e:
         logger.error(f"测试连接失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "测试连接时发生内部错误"}), 500
 
 @admin_app.route('/api/admin/tokens', methods=['GET'])
 @jwt_required
@@ -604,7 +590,7 @@ def get_tokens():
         })
     except Exception as e:
         logger.error(f"获取Token列表失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "获取Token列表时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/tokens', methods=['POST'])
@@ -635,7 +621,7 @@ def create_token():
 
     except Exception as e:
         logger.error(f"创建Token失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "创建Token时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/tokens/<int:token_id>', methods=['DELETE'])
@@ -655,7 +641,7 @@ def delete_token(token_id):
 
     except Exception as e:
         logger.error(f"删除Token失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "删除Token时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/tokens/<int:token_id>/toggle', methods=['POST'])
@@ -680,7 +666,7 @@ def toggle_token_status(token_id):
 
     except Exception as e:
         logger.error(f"更新Token状态失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "更新Token状态时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/stats', methods=['GET'])
@@ -708,12 +694,12 @@ def get_system_stats():
         
     except Exception as e:
         logger.error(f"获取系统统计失败: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": "获取统计信息时发生内部错误"}), 500
 
 
-def start_admin_server(port):
+def start_admin_server(port, host='127.0.0.1'):
     """启动管理后台服务器"""
-    admin_app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+    admin_app.run(host=host, port=port, debug=False, use_reloader=False)
 
 # ===== 工具定义 - 超简洁的装饰器语法 =====
 
@@ -1389,8 +1375,9 @@ periodic_sync_service = PeriodicSyncService()
 
 
 if __name__ == "__main__":
-    port = int(os.getenv("SSE_PORT", "12345"))
-    admin_port = int(os.getenv("ADMIN_PORT", str(port + 1)))  # 管理端口默认为MCP端口+1
+    port = int(os.getenv("MCP_PORT", os.getenv("SSE_PORT", "12345")))  # 兼容旧变量名
+    admin_port = int(os.getenv("ADMIN_PORT", str(port + 1)))
+    bind_host = os.getenv("BIND_HOST", "127.0.0.1")  # 默认仅本地访问
     
     # 启动信息
     logger.server_info(f"启动 SOAR MCP 服务器")
@@ -1431,8 +1418,8 @@ if __name__ == "__main__":
     periodic_sync_service.start_periodic_sync()
 
     # 启动管理后台服务器（在后台线程中运行）
-    logger.info(f"启动管理后台服务器 (端口 {admin_port})...")
-    admin_thread = Thread(target=start_admin_server, args=(admin_port,), daemon=True)
+    logger.info(f"启动管理后台服务器 ({bind_host}:{admin_port})...")
+    admin_thread = Thread(target=start_admin_server, args=(admin_port, bind_host), daemon=True)
     admin_thread.start()
     
     # 启动服务器前的最后日志
@@ -1467,8 +1454,8 @@ if __name__ == "__main__":
 
         logger.info("🔐 认证系统已就绪")
         mcp.run(
-            transport="streamable-http",  # 使用 StreamableHTTP 协议以兼容现有客户端
-            host="0.0.0.0",
+            transport="streamable-http",
+            host=bind_host,
             port=port,
             stateless_http=True,  # 禁用session管理，避免Cherry Studio等客户端的mcp-session-id头验证问题
             path="/mcp",  # 保持/mcp路径以兼容现有客户端
