@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **SOAR MCP Server** (v1.3.0) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
+This is a **SOAR MCP Server** (v1.5.0) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
 
 ## Architecture
 
@@ -15,7 +15,7 @@ This is a **SOAR MCP Server** (v1.3.0) designed specifically for the [OctoMation
 - **`sync_service.py`** - Asynchronous service for syncing data from OctoMation SOAR API via `httpx.AsyncClient`
 - **`auth_utils.py`** - Authentication management: **bcrypt** password hashing, JWT with persistent secret key
 - **`config_manager.py`** - Thread-safe configuration management with database persistence and cache
-- **`auth_provider.py`** - SOAR authentication provider for MCP integration (prepared, not wired in yet)
+- **`auth_provider.py`** - SOAR authentication provider for MCP integration; dual-mode auth: **HTTP Bearer Token** (recommended) + URL query parameter (compatible)
 - **`logger_config.py`** - Centralized logging with `RotatingFileHandler` (10MB/file, 5 backups)
 
 ### Dual Server Architecture
@@ -38,7 +38,7 @@ Both default to binding on `127.0.0.1` (configurable via `BIND_HOST`).
 ### Key Technical Details
 
 - **Playbook IDs**: BigInteger (64-bit), support both integer and string formats
-- **Authentication**: Token-based via URL parameters (`?token=xxxx`)
+- **Authentication**: Dual-mode token auth — **HTTP Bearer Token** (`Authorization: Bearer <token>`, recommended) + URL parameter (`?token=xxxx`, compatible fallback)
 - **Password Hashing**: **bcrypt** (salted), replaces SHA-256
 - **JWT Secret**: Persisted in database, survives server restarts
 - **Database**: SQLite with SQLAlchemy ORM; sessions via `@contextmanager`
@@ -80,6 +80,12 @@ python3 soar_mcp_server.py
 cd tests
 python mcp_soar_client.py
 
+# Test Bearer Token authentication (unit tests only, no server needed)
+python tests/test_bearer_auth.py --unit-only
+
+# Test Bearer Token authentication (integration, requires running server + token)
+python tests/test_bearer_auth.py --token <your_token>
+
 # Test specific playbook tools
 python test_new_playbook_tools.py --playbook-id 1907203516548373
 
@@ -107,7 +113,8 @@ python test_unified_execute_playbook.py --playbook-id 1907203516548373
 
 ### Configuration
 - **Web Admin**: `http://127.0.0.1:12346/admin` (configure SOAR API settings)
-- **MCP Endpoint**: `http://127.0.0.1:12345/mcp?token=xxxx`
+- **MCP Endpoint (Bearer)**: `http://127.0.0.1:12345/mcp` with header `Authorization: Bearer <token>` (recommended)
+- **MCP Endpoint (URL)**: `http://127.0.0.1:12345/mcp?token=xxxx` (compatible fallback)
 - **Environment**: `.env` file for initial configuration; runtime config stored in database
 
 ## Test Data Parameters
@@ -132,6 +139,7 @@ When testing playbook execution, use these parameters (from actual OctoMation se
 
 For Cherry Studio, Claude Desktop, and other MCP clients:
 
+**Method 1: URL Token (widely compatible)**
 ```json
 {
   "mcpServers": {
@@ -140,6 +148,23 @@ For Cherry Studio, Claude Desktop, and other MCP clients:
       "name": "soar-mcp",
       "description": "SOAR 安全编排平台集成",
       "url": "http://127.0.0.1:12345/mcp?token=xxxx"
+    }
+  }
+}
+```
+
+**Method 2: Bearer Token (recommended, more secure)**
+```json
+{
+  "mcpServers": {
+    "soar-mcp": {
+      "type": "http",
+      "name": "soar-mcp",
+      "description": "SOAR 安全编排平台集成",
+      "url": "http://127.0.0.1:12345/mcp",
+      "headers": {
+        "Authorization": "Bearer xxxx"
+      }
     }
   }
 }

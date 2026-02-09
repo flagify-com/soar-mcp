@@ -31,6 +31,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 | MCP 服务 | FastMCP 2.x + Streamable-HTTP | 异步工具函数，共享 httpx 连接池 |
 | 管理后台 | Flask | JWT 认证，RESTful API |
 | 数据库 | SQLAlchemy ORM + SQLite | 上下文管理器 session，BigInteger ID |
+| MCP 认证 | Bearer Token + URL参数 | 双模式认证，Bearer 推荐 |
 | 密码安全 | bcrypt | 带盐哈希，防彩虹表攻击 |
 | 请求上下文 | contextvars | 原生支持异步协程隔离 |
 | 日志 | RotatingFileHandler | 自动轮转，单文件 10MB，保留 5 份 |
@@ -158,7 +159,9 @@ python3 soar_mcp_server.py
   ⚠️  请妥善保管，此密码不会再次显示！
 ============================================================
 
-📊 MCP服务: http://127.0.0.1:12345/mcp (带token参数)
+📊 MCP服务: http://127.0.0.1:12345/mcp
+   认证方式1: Authorization: Bearer <token> (推荐)
+   认证方式2: http://127.0.0.1:12345/mcp?token=<token> (兼容)
 🎛️  管理后台: http://127.0.0.1:12346/admin
 ```
 
@@ -205,6 +208,8 @@ python3 soar_mcp_server.py
 1. **打开 Cherry Studio**
 2. **进入设置** → **MCP 服务器**
 3. **编辑配置文件**，添加以下内容：
+
+   **方式一：URL 参数（兼容性好）**
    ```json
    {
      "mcpServers": {
@@ -217,12 +222,30 @@ python3 soar_mcp_server.py
      }
    }
    ```
+
+   **方式二：Bearer Token（推荐，更安全）**
+   ```json
+   {
+     "mcpServers": {
+       "soar-mcp": {
+         "type": "http",
+         "name": "soar-mcp",
+         "description": "SOAR 安全编排平台集成",
+         "url": "http://127.0.0.1:12345/mcp",
+         "headers": {
+           "Authorization": "Bearer xxxx"
+         }
+       }
+     }
+   }
+   ```
+
 4. **保存并重启 Cherry Studio**
 
 ![Cherry Studio使用SOAR MCP](docs/images/use-soar-mcp-in-cherry-studio.jpg)
 *在 Cherry Studio 中成功使用 SOAR MCP 服务器功能*
 
-⚠️ **重要**：将 `token=xxxx` 替换为从管理后台获取的实际API Token
+⚠️ **重要**：将 `xxxx` 替换为从管理后台获取的实际API Token。Bearer Token 方式更安全，Token 不会暴露在 URL 和日志中。
 
 #### Claude Desktop
 
@@ -232,7 +255,7 @@ python3 soar_mcp_server.py
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-**配置内容**：
+**配置内容（URL 参数方式）**：
 ```json
 {
   "mcpServers": {
@@ -246,16 +269,36 @@ python3 soar_mcp_server.py
 }
 ```
 
+**配置内容（Bearer Token 方式，推荐）**：
+```json
+{
+  "mcpServers": {
+    "soar-mcp": {
+      "type": "http",
+      "name": "soar-mcp",
+      "description": "SOAR 安全编排平台集成",
+      "url": "http://127.0.0.1:12345/mcp",
+      "headers": {
+        "Authorization": "Bearer xxxx"
+      }
+    }
+  }
+}
+```
+
 ⚠️ **重要**：
-- 将 `token=xxxx` 替换为从管理后台获取的实际API Token
+- 将 `xxxx` 替换为从管理后台获取的实际API Token
+- Bearer Token 方式更安全，推荐优先使用
 - Claude Desktop 需要重启才能加载新配置
 
 #### 其他 MCP 客户端
 
 **通用配置参数**：
 - **协议**: `HTTP` (Streamable-HTTP)
-- **服务器 URL**: `http://127.0.0.1:12345/mcp?token=xxxx`
-- **认证**: 通过URL参数传递token
+- **服务器 URL**: `http://127.0.0.1:12345/mcp`
+- **认证方式**（二选一）:
+  - **推荐**: HTTP Header `Authorization: Bearer <token>`
+  - **兼容**: URL 参数 `http://127.0.0.1:12345/mcp?token=xxxx`
 
 ### 🧪 第四步：功能验证
 
@@ -447,6 +490,7 @@ v1.1.0+ 版本包含以下安全加固措施：
 
 | 特性 | 说明 |
 |------|------|
+| **双模式 Token 认证** | 支持 HTTP Bearer Token（推荐）和 URL 参数两种认证方式，Bearer Token 不暴露在 URL 和日志中 |
 | **bcrypt 密码哈希** | 替代 SHA-256，防止彩虹表攻击 |
 | **JWT 密钥持久化** | 密钥存储在数据库中，服务重启后 Token 不会失效 |
 | **密码日志脱敏** | 管理员密码仅输出到控制台，不写入日志文件 |
@@ -465,6 +509,12 @@ v1.1.0+ 版本包含以下安全加固措施：
 # 运行 MCP 客户端测试
 cd tests
 python mcp_soar_client.py
+
+# 运行 Bearer Token 认证单元测试（无需启动服务器）
+python tests/test_bearer_auth.py --unit-only
+
+# 运行 Bearer Token 认证集成测试（需要服务器运行 + 有效Token）
+python tests/test_bearer_auth.py --token <your_token>
 
 # 运行自动化测试
 ./tests/test_automation.sh

@@ -3,8 +3,8 @@
 SOAR MCP Server 版本管理
 """
 
-__version__ = "1.4.0"
-__version_info__ = (1, 4, 0)
+__version__ = "1.5.0"
+__version_info__ = (1, 5, 0)
 
 # 版本说明
 VERSION_NOTES = {
@@ -19,7 +19,8 @@ VERSION_NOTES = {
     "1.2.1": "代码质量：修复auth_provider模块引用、健康检查、日志轮转、清理未使用依赖",
     "1.2.2": "密码脚本升级bcrypt v2.0、README/CLAUDE.md文档全面更新适配新架构",
     "1.3.0": "项目结构优化、文档整理归档、清理无用文件、目录规范化",
-    "1.4.0": "前端UI全面重构(Cyber Shield设计系统)、Google Fonts本地化、升级指南、剧本详情弹框布局优化"
+    "1.4.0": "前端UI全面重构(Cyber Shield设计系统)、Google Fonts本地化、升级指南、剧本详情弹框布局优化",
+    "1.5.0": "MCP认证增强：支持HTTP Bearer Token双模式认证(Bearer推荐+URL参数兼容)、Token弹窗UI重构、状态标签优化、完整测试套件"
 }
 
 def get_version():

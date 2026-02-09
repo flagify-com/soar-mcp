@@ -25,15 +25,17 @@ from sync_service import PlaybookSyncService
 from logger_config import logger
 from auth_utils import jwt_required
 from config_manager import config_manager
+from auth_provider import soar_auth_provider
 
 # 加载环境变量
 load_dotenv()
 
-# 创建FastMCP应用
+# 创建FastMCP应用（集成认证提供者，支持 Bearer Token + URL参数双模式认证）
 mcp = FastMCP(
     name="SOAR MCP Server",
     version=__version__,
-    instructions="SOAR (Security Orchestration, Automation and Response) 平台集成服务器，提供安全编排、自动化和响应功能。"
+    instructions="SOAR (Security Orchestration, Automation and Response) 平台集成服务器，提供安全编排、自动化和响应功能。",
+    auth=soar_auth_provider,
 )
 
 
@@ -945,7 +947,9 @@ if __name__ == "__main__":
             logger.info("")
             logger.info("=" * 80)
             logger.info("🚀 服务器启动完成!")
-            logger.info(f"📊 MCP服务: http://{bind_host}:{port}/mcp (带token参数)")
+            logger.info(f"📊 MCP服务: http://{bind_host}:{port}/mcp")
+            logger.info(f"   认证方式1: Authorization: Bearer <token> (推荐)")
+            logger.info(f"   认证方式2: http://{bind_host}:{port}/mcp?token=<token> (兼容)")
             logger.info(f"🎛️  管理后台: http://{bind_host}:{admin_port}/admin")
             logger.info("=" * 80)
             if admin_password:

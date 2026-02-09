@@ -1126,13 +1126,13 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th width="18%">Token名称</th>
-                            <th width="20%">Token值</th>
-                            <th width="14%">创建时间</th>
-                            <th width="14%">过期时间</th>
-                            <th width="16%">最后使用</th>
+                            <th width="16%">Token名称</th>
+                            <th width="18%">Token值</th>
+                            <th width="13%">创建时间</th>
+                            <th width="13%">过期时间</th>
+                            <th width="14%">最后使用</th>
                             <th width="10%">状态</th>
-                            <th width="8%">操作</th>
+                            <th width="16%">操作</th>
                         </tr>
                     </thead>
                     <tbody id="tokens-tbody">
@@ -1181,52 +1181,159 @@
 
         <!-- 显示Token值 Modal -->
         <div id="show-token-modal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 680px;">
                 <div class="modal-header">
                     <h3 class="modal-title">Token创建成功</h3>
                     <button class="close" onclick="closeShowTokenModal()">&times;</button>
                 </div>
-                <div class="modal-body">
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
-                        <div style="color: #dc2626; font-weight: 600; font-size: 0.9rem;">
+                <div class="modal-body" style="padding: 1.5rem 1.75rem 1.75rem;">
+                    <!-- 警告提示 -->
+                    <div style="background: linear-gradient(135deg, #fef2f2 0%, #fff5f5 100%); border: 1px solid #fecaca; border-left: 4px solid #ef4444; border-radius: 8px; padding: 0.875rem 1rem; margin-bottom: 2rem;">
+                        <div style="color: #dc2626; font-weight: 600; font-size: 0.85rem; line-height: 1.5;">
                             ⚠️ 重要提示：请立即复制并保存以下信息，关闭窗口后将无法再次查看完整Token！
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Token值</label>
-                        <div class="password-input-container">
-                            <input type="text" id="new-token-value" class="form-input" readonly>
-                            <button type="button" class="password-toggle" onclick="copyTokenToClipboard()">
-                                <span>📋</span>
-                            </button>
+                    <!-- Token 凭证信息 -->
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-bottom: 2rem;">
+
+                        <!-- Token 值 -->
+                        <div class="token-field-group">
+                            <div class="token-field-label">Token值</div>
+                            <div class="token-field-row">
+                                <code class="token-field-value" id="new-token-value-display"></code>
+                                <button type="button" class="token-copy-btn" onclick="copyField('new-token-value-display', this)" title="复制Token">
+                                    <span class="token-copy-icon">📋</span>
+                                    <span class="token-copy-text">复制</span>
+                                </button>
+                            </div>
+                            <div class="token-field-hint">用于API认证的访问令牌</div>
                         </div>
-                        <small class="form-help">
-                            用于API认证的访问令牌
-                        </small>
+
+                        <!-- 分隔线 -->
+                        <div style="border-top: 1px dashed var(--border-light); margin: 0.25rem 0;"></div>
+
+                        <!-- 完整 MCP URL -->
+                        <div class="token-field-group">
+                            <div class="token-field-label">完整MCP URL <span class="token-field-badge" style="background: #eff6ff; color: #3b82f6;">Streamable HTTP</span></div>
+                            <div class="token-field-row">
+                                <code class="token-field-value" id="new-mcp-url-display"></code>
+                                <button type="button" class="token-copy-btn" onclick="copyField('new-mcp-url-display', this)" title="复制MCP URL">
+                                    <span class="token-copy-icon">📋</span>
+                                    <span class="token-copy-text">复制</span>
+                                </button>
+                            </div>
+                            <div class="token-field-hint">可直接用于Claude Desktop、Cherry Studio等MCP客户端配置</div>
+                        </div>
+
+                        <!-- 分隔线 -->
+                        <div style="border-top: 1px dashed var(--border-light); margin: 0.25rem 0;"></div>
+
+                        <!-- HTTP Bearer 认证头 -->
+                        <div class="token-field-group">
+                            <div class="token-field-label">HTTP 认证头 <span class="token-field-badge" style="background: #ecfdf5; color: #059669;">推荐</span></div>
+                            <div class="token-field-row" style="background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%); border-color: #bbf7d0;">
+                                <code class="token-field-value" id="new-bearer-header-display" style="color: #166534;"></code>
+                                <button type="button" class="token-copy-btn" onclick="copyField('new-bearer-header-display', this)" title="复制Bearer认证头" style="border-color: #86efac; color: #166534;">
+                                    <span class="token-copy-icon">📋</span>
+                                    <span class="token-copy-text">复制</span>
+                                </button>
+                            </div>
+                            <div class="token-field-hint">更安全的认证方式 — Token不会出现在URL和服务器日志中。将此值设为HTTP请求的 <code style="font-size: 0.75rem; background: #f1f5f9; padding: 1px 4px; border-radius: 3px;">Authorization</code> 头即可。</div>
+                        </div>
+
                     </div>
 
-                    <div class="form-group">
-                        <label>完整MCP URL (Streamable HTTP)</label>
-                        <div class="password-input-container">
-                            <input type="text" id="new-mcp-url" class="form-input" readonly>
-                            <button type="button" class="password-toggle" onclick="copyMcpUrlToClipboard()">
-                                <span>📋</span>
-                            </button>
-                        </div>
-                        <small class="form-help">
-                            Streamable HTTP类型的MCP服务器URL，可直接用于Claude Desktop、Cherry Studio等MCP客户端配置
-                        </small>
-                    </div>
-
-                    <div class="config-actions">
-                        <button type="button" class="btn btn-primary" onclick="copyTokenToClipboard()">复制Token</button>
-                        <button type="button" class="btn btn-primary" onclick="copyMcpUrlToClipboard()">复制MCP URL</button>
+                    <!-- 底部操作栏 -->
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                        <button type="button" class="btn btn-primary" onclick="copyAllTokenInfo()">一键复制全部</button>
                         <button type="button" class="btn btn-secondary" onclick="closeShowTokenModal()">关闭</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            /* Token 弹窗专用样式 */
+            .token-field-group {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .token-field-label {
+                font-weight: 700;
+                font-size: 0.82rem;
+                color: var(--text-primary);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .token-field-badge {
+                font-size: 0.68rem;
+                font-weight: 600;
+                padding: 2px 8px;
+                border-radius: 4px;
+                letter-spacing: 0.01em;
+            }
+            .token-field-row {
+                display: flex;
+                align-items: center;
+                gap: 0;
+                background: #f8fafc;
+                border: 1px solid var(--border-light);
+                border-radius: var(--radius-sm);
+                overflow: hidden;
+                transition: border-color 0.2s ease;
+            }
+            .token-field-row:hover {
+                border-color: var(--accent-indigo);
+            }
+            .token-field-value {
+                flex: 1;
+                padding: 10px 14px;
+                font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+                font-size: 0.82rem;
+                color: var(--text-primary);
+                word-break: break-all;
+                line-height: 1.5;
+                background: transparent;
+                user-select: all;
+                cursor: text;
+            }
+            .token-copy-btn {
+                flex-shrink: 0;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 8px 14px;
+                background: transparent;
+                border: none;
+                border-left: 1px solid var(--border-light);
+                cursor: pointer;
+                font-size: 0.78rem;
+                font-weight: 600;
+                font-family: var(--font-sans);
+                color: var(--text-secondary);
+                transition: all 0.15s ease;
+                white-space: nowrap;
+            }
+            .token-copy-btn:hover {
+                background: var(--accent-indigo);
+                color: white;
+                border-left-color: var(--accent-indigo);
+            }
+            .token-copy-btn.copied {
+                background: #059669;
+                color: white;
+                border-left-color: #059669;
+            }
+            .token-copy-icon { font-size: 0.85rem; }
+            .token-field-hint {
+                font-size: 0.75rem;
+                color: var(--text-muted);
+                line-height: 1.5;
+            }
+        </style>
 
         <!-- 系统配置区域 -->
         <div class="card" id="config-section" style="display: none;">
@@ -2173,12 +2280,25 @@
                         <td style="white-space: nowrap; font-size: 0.85rem;">${token.expires_at ? formatDate(token.expires_at) : '永不过期'}</td>
                         <td style="white-space: nowrap; font-size: 0.85rem;">${formatDate(token.last_used_at)}</td>
                         <td>
-                            <span style="color: ${isExpired ? '#fca5a5' : (token.is_active ? '#ffffff' : '#d1d5db')}; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);">
-                                ${isExpired ? '已过期' : (token.is_active ? '活跃' : '禁用')}
+                            <span style="
+                                display: inline-block;
+                                padding: 2px 10px;
+                                border-radius: 12px;
+                                font-size: 0.75rem;
+                                font-weight: 600;
+                                ${isExpired
+                                    ? 'background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;'
+                                    : (token.is_active
+                                        ? 'background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;'
+                                        : 'background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db;'
+                                    )
+                                }
+                            ">
+                                ${isExpired ? '已过期' : (token.is_active ? '活跃' : '已禁用')}
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.75rem; white-space: nowrap;"
                                     onclick="deleteToken(${token.id})">删除</button>
                         </td>
                     </tr>
@@ -2224,13 +2344,16 @@
                 if (result.success) {
                     closeCreateTokenModal();
 
-                    // 显示新创建的Token值
-                    document.getElementById('new-token-value').value = result.token;
+                    // 填充 Token 信息到新的 code 元素
+                    document.getElementById('new-token-value-display').textContent = result.token;
 
                     // 生成完整的MCP URL
                     const currentHost = window.location.host;
                     const mcpUrl = `http://${currentHost.replace(':12346', ':12345')}/mcp?token=${result.token}`;
-                    document.getElementById('new-mcp-url').value = mcpUrl;
+                    document.getElementById('new-mcp-url-display').textContent = mcpUrl;
+
+                    // 生成 HTTP Bearer 认证头
+                    document.getElementById('new-bearer-header-display').textContent = `Authorization: Bearer ${result.token}`;
 
                     document.getElementById('show-token-modal').style.display = 'block';
 
@@ -2248,37 +2371,72 @@
         // 关闭显示Token值模态框
         function closeShowTokenModal() {
             document.getElementById('show-token-modal').style.display = 'none';
-            document.getElementById('new-token-value').value = '';
-            document.getElementById('new-mcp-url').value = '';
+            document.getElementById('new-token-value-display').textContent = '';
+            document.getElementById('new-mcp-url-display').textContent = '';
+            document.getElementById('new-bearer-header-display').textContent = '';
         }
 
-        // 复制Token到剪贴板
-        async function copyTokenToClipboard() {
-            const tokenInput = document.getElementById('new-token-value');
+        // 通用字段复制函数（带按钮反馈动效）
+        async function copyField(elementId, btnElement) {
+            const el = document.getElementById(elementId);
+            const text = el.textContent || el.innerText;
             try {
-                await navigator.clipboard.writeText(tokenInput.value);
-                showCopySuccessAlert('Token已复制到剪贴板');
-            } catch (error) {
+                await navigator.clipboard.writeText(text);
+            } catch (e) {
                 // 兼容旧浏览器
-                tokenInput.select();
+                const range = document.createRange();
+                range.selectNodeContents(el);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
                 document.execCommand('copy');
-                showCopySuccessAlert('Token已复制到剪贴板');
+                sel.removeAllRanges();
             }
+            // 按钮反馈动效
+            if (btnElement) {
+                const iconSpan = btnElement.querySelector('.token-copy-icon');
+                const textSpan = btnElement.querySelector('.token-copy-text');
+                const origIcon = iconSpan.textContent;
+                const origText = textSpan.textContent;
+                iconSpan.textContent = '✅';
+                textSpan.textContent = '已复制';
+                btnElement.classList.add('copied');
+                setTimeout(() => {
+                    iconSpan.textContent = origIcon;
+                    textSpan.textContent = origText;
+                    btnElement.classList.remove('copied');
+                }, 1500);
+            }
+            showCopySuccessAlert('已复制到剪贴板');
         }
 
-        // 复制MCP URL到剪贴板
-        async function copyMcpUrlToClipboard() {
-            const mcpUrlInput = document.getElementById('new-mcp-url');
+        // 一键复制全部Token信息
+        async function copyAllTokenInfo() {
+            const token = document.getElementById('new-token-value-display').textContent;
+            const mcpUrl = document.getElementById('new-mcp-url-display').textContent;
+            const bearerHeader = document.getElementById('new-bearer-header-display').textContent;
+            const allInfo = [
+                `Token: ${token}`,
+                `MCP URL: ${mcpUrl}`,
+                `HTTP Header: ${bearerHeader}`,
+            ].join('\n');
             try {
-                await navigator.clipboard.writeText(mcpUrlInput.value);
-                showCopySuccessAlert('MCP URL已复制到剪贴板');
-            } catch (error) {
-                // 兼容旧浏览器
-                mcpUrlInput.select();
+                await navigator.clipboard.writeText(allInfo);
+            } catch (e) {
+                const textarea = document.createElement('textarea');
+                textarea.value = allInfo;
+                document.body.appendChild(textarea);
+                textarea.select();
                 document.execCommand('copy');
-                showCopySuccessAlert('MCP URL已复制到剪贴板');
+                document.body.removeChild(textarea);
             }
+            showCopySuccessAlert('全部信息已复制到剪贴板');
         }
+
+        // 保留旧函数名兼容性
+        function copyTokenToClipboard() { copyField('new-token-value-display'); }
+        function copyMcpUrlToClipboard() { copyField('new-mcp-url-display'); }
+        function copyBearerHeaderToClipboard() { copyField('new-bearer-header-display'); }
 
         // 删除Token
         async function deleteToken(tokenId) {
