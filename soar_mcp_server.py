@@ -1449,23 +1449,23 @@ if __name__ == "__main__":
             logger.info("=" * 80)
             logger.info("🚀 服务器启动完成!")
             logger.info(f"📊 MCP服务: http://127.0.0.1:{port}/mcp (带token参数)")
-            logger.info("✅ Cherry Studio等客户端可以使用: http://127.0.0.1:12345/mcp?token=xxx")
             logger.info(f"🎛️  管理后台: http://127.0.0.1:{admin_port}/admin")
             logger.info("📝 同步日志请查看 logs/ 目录下的日志文件")
             logger.info("=" * 80)
-            logger.info("")
+            # 管理员密码仅输出到控制台（stdout），不写入日志文件
             if admin_password:
-                logger.info("🔑 管理员密码: " + admin_password)
+                print(f"\n{'=' * 60}")
+                print(f"  🔑 管理员初始密码: {admin_password}")
+                print(f"  ⚠️  请妥善保管，此密码不会再次显示！")
+                print(f"{'=' * 60}\n")
             else:
-                logger.info("🔑 管理员密码已存在，请查看之前的启动日志")
-            logger.info("")
+                print("  🔑 管理员密码已存在，如需重置请运行 reset_admin_password.sh")
 
         import threading
         startup_thread = threading.Thread(target=print_startup_info, daemon=True)
         startup_thread.start()
 
-        # 暂时回到原始方法，但保持认证系统的改进
-        logger.info("🔐 使用增强的认证系统 (SOARAuthProvider集成)")
+        logger.info("🔐 认证系统已就绪")
         mcp.run(
             transport="streamable-http",  # 使用 StreamableHTTP 协议以兼容现有客户端
             host="0.0.0.0",
