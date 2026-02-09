@@ -7,8 +7,8 @@
 import secrets
 import string
 import jwt
-import hashlib
-from datetime import datetime, timedelta
+import bcrypt
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 from functools import wraps
 from flask import request, jsonify, current_app
@@ -21,47 +21,76 @@ class AuthManager:
     """认证管理器"""
 
     def __init__(self, jwt_secret_key: str = None):
-        self.jwt_secret_key = jwt_secret_key or secrets.token_urlsafe(32)
+        if jwt_secret_key:
+            self.jwt_secret_key = jwt_secret_key
+        else:
+            # 从数据库加载持久化的 JWT 密钥，不存在则生成并持久化
+            stored_key = db_manager.get_system_config('jwt_secret_key')
+            if stored_key:
+                self.jwt_secret_key = stored_key
+                logger.debug("JWT密钥已从数据库加载")
+            else:
+                self.jwt_secret_key = secrets.token_urlsafe(32)
+                db_manager.set_system_config(
+                    'jwt_secret_key',
+                    self.jwt_secret_key,
+                    'JWT签名密钥（自动生成）'
+                )
+                logger.info("JWT密钥已生成并持久化到数据库")
 
     def generate_admin_password(self, length: int = 12) -> str:
         """生成管理员密码"""
-        # 包含大小写字母、数字和特殊字符
         alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
         return ''.join(secrets.choice(alphabet) for _ in range(length))
 
     def hash_password(self, password: str) -> str:
-        """对密码进行哈希"""
-        return hashlib.sha256(password.encode('utf-8')).hexdigest()
+        """使用 bcrypt 对密码进行哈希"""
+        return bcrypt.hashpw(
+            password.encode('utf-8'),
+            bcrypt.gensalt()
+        ).decode('utf-8')
 
-    def init_admin_password(self) -> str:
-        """初始化管理员密码，如果不存在则创建"""
+    def check_password(self, password: str, password_hash: str) -> bool:
+        """验证密码是否与哈希匹配"""
+        try:
+            return bcrypt.checkpw(
+                password.encode('utf-8'),
+                password_hash.encode('utf-8')
+            )
+        except Exception:
+            return False
+
+    def init_admin_password(self) -> Optional[str]:
+        """初始化管理员密码，如果不存在则创建。返回新密码或 None"""
         existing_hash = db_manager.get_admin_password_hash()
         if existing_hash:
             logger.info("管理员密码已存在")
-            return None  # 不返回现有密码
+            return None
 
-        # 生成新密码
         new_password = self.generate_admin_password()
         password_hash = self.hash_password(new_password)
         success = db_manager.create_admin_password(password_hash, "系统自动生成的管理员密码")
 
         if success:
-            logger.info(f"管理员密码已生成: {new_password}")
+            # 不将明文密码写入日志文件，仅返回给调用方
+            logger.info("管理员密码已生成（请查看控制台输出）")
             return new_password
         else:
-            logger.error("管理员密码生成失败")
             raise Exception("管理员密码生成失败")
 
     def verify_password(self, password: str) -> bool:
         """验证管理员密码"""
-        password_hash = self.hash_password(password)
-        return db_manager.verify_admin_password(password_hash)
+        stored_hash = db_manager.get_admin_password_hash()
+        if not stored_hash:
+            return False
+        return self.check_password(password, stored_hash)
 
     def generate_jwt(self, payload: Dict[str, Any], expires_hours: int = 24) -> str:
         """生成JWT token"""
         try:
-            payload['exp'] = datetime.utcnow() + timedelta(hours=expires_hours)
-            payload['iat'] = datetime.utcnow()
+            now = datetime.now(timezone.utc)
+            payload['exp'] = now + timedelta(hours=expires_hours)
+            payload['iat'] = now
             return jwt.encode(payload, self.jwt_secret_key, algorithm='HS256')
         except Exception as e:
             logger.error(f"JWT生成失败: {e}")
@@ -84,8 +113,8 @@ class AuthManager:
         if self.verify_password(admin_password):
             payload = {
                 'user_type': 'admin',
-                'password_hash': self.hash_password(admin_password)[-8:],  # 存储密码哈希的最后8位用于识别
-                'login_time': datetime.utcnow().isoformat()
+                'session_id': secrets.token_urlsafe(8),
+                'login_time': datetime.now(timezone.utc).isoformat()
             }
             return self.generate_jwt(payload)
         return None
@@ -113,7 +142,6 @@ def jwt_required(f):
             if not payload:
                 return jsonify({'error': 'token无效或已过期'}), 401
 
-            # 将用户信息添加到request上下文
             request.user = payload
             return f(*args, **kwargs)
         except Exception as e:

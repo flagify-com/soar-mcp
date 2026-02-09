@@ -31,7 +31,7 @@ class ConfigManager:
             try:
                 self._config_cache = db_manager.get_all_system_configs()
                 self._cache_timestamp = current_time
-                logger.info("配置缓存已刷新")
+                logger.debug("配置缓存已刷新")
             except Exception as e:
                 logger.error(f"刷新配置缓存失败: {e}")
     
@@ -47,7 +47,6 @@ class ConfigManager:
         try:
             success = db_manager.set_system_config(key, value, description)
             if success:
-                # 立即刷新缓存
                 self._refresh_cache(force=True)
             return success
         except Exception as e:
@@ -66,7 +65,7 @@ class ConfigManager:
         config = self.get_all()
         
         return SystemConfigData(
-            soar_api_url=config.get("soar_api_url", "https://hg.wuzhi-ai.com"),
+            soar_api_url=config.get("soar_api_url", ""),
             soar_api_token=config.get("soar_api_token", ""),
             soar_timeout=config.get("soar_timeout", 30),
             sync_interval=config.get("sync_interval", 14400),
@@ -95,7 +94,7 @@ class ConfigManager:
     
     def get_api_url(self) -> str:
         """获取API地址"""
-        return self.get("soar_api_url", "https://hg.wuzhi-ai.com")
+        return self.get("soar_api_url", "")
     
     def get_api_token(self) -> str:
         """获取API Token"""
@@ -110,19 +109,17 @@ class ConfigManager:
         return self.get("soar_labels", ["MCP"])
     
     def get_ssl_verify(self) -> bool:
-        """获取SSL验证设置"""
+        """获取SSL验证设置（默认开启验证）"""
         value = self.get("ssl_verify", True)
-        # 处理字符串类型的布尔值
         if isinstance(value, str):
             return value.lower() in ("true", "1", "yes", "on")
         return bool(value)
     
-    def validate_config(self) -> Dict[str, Any]:
-        """验证配置完整性"""
-        config = self.get_soar_config()
+    def validate_config(self, config_data: Optional[SystemConfigData] = None) -> Dict[str, Any]:
+        """验证配置完整性（不修改全局缓存）"""
+        config = config_data or self.get_soar_config()
         issues = []
 
-        # 检查必填项
         if not config.soar_api_url:
             issues.append("API地址不能为空")
 
@@ -135,9 +132,6 @@ class ConfigManager:
         if config.sync_interval <= 0:
             issues.append("同步周期必须大于0")
 
-        # 标签列表可以为空（表示同步所有标签）
-
-        # URL格式检查
         if config.soar_api_url and not (config.soar_api_url.startswith('http://') or config.soar_api_url.startswith('https://')):
             issues.append("API地址格式不正确，需要以http://或https://开头")
 
@@ -148,18 +142,11 @@ class ConfigManager:
         }
     
     def is_first_run(self) -> bool:
-        """
-        检测是否为首次运行
-        当SOAR API地址和Token都为空时认为是首次运行
-        """
+        """检测是否为首次运行"""
         try:
             config = self.get_soar_config()
-
-            # 检查关键配置是否为空
             api_url_empty = not config.soar_api_url or config.soar_api_url.strip() == ""
             token_empty = not config.soar_api_token or config.soar_api_token.strip() == ""
-
-            # 如果API地址和Token都为空，则认为是首次运行
             is_first = api_url_empty and token_empty
 
             if is_first:
@@ -171,12 +158,10 @@ class ConfigManager:
 
         except Exception as e:
             logger.warning(f"检测首次运行状态失败: {e}")
-            return True  # 异常时默认认为是首次运行，确保安全启动
+            return True
 
     def get_missing_required_configs(self) -> List[str]:
-        """
-        获取缺失的必需配置项列表
-        """
+        """获取缺失的必需配置项列表"""
         try:
             config = self.get_soar_config()
             missing = []
@@ -193,24 +178,24 @@ class ConfigManager:
             logger.error(f"检查配置完整性失败: {e}")
             return ["配置检查异常"]
 
-    def test_connection(self) -> Dict[str, Any]:
-        """测试API连接"""
+    def test_connection(self, config_data: Optional[SystemConfigData] = None) -> Dict[str, Any]:
+        """测试API连接（不修改全局缓存）"""
         try:
             import requests
             
-            config = self.get_soar_config()
+            config = config_data or self.get_soar_config()
+            
+            # 确定 SSL 验证设置
+            ssl_verify = self.get_ssl_verify()
+            
             headers = {
                 "hg-token": config.soar_api_token,
                 "Content-Type": "application/json"
             }
             
-            # 测试连接
             test_url = f"{config.soar_api_url.rstrip('/')}/odp/core/v1/api/playbook/findAll"
-            test_data = {
-                "publishStatus": "ONLINE"
-            }
+            test_data = {"publishStatus": "ONLINE"}
 
-            # 只有当标签列表不为空时才添加标签过滤（测试时使用第一个标签）
             if config.soar_labels:
                 test_data["labelList"] = [{"name": label} for label in config.soar_labels[:1]]
             
@@ -219,12 +204,11 @@ class ConfigManager:
                 json=test_data,
                 headers=headers,
                 timeout=config.soar_timeout,
-                verify=self.get_ssl_verify()
+                verify=ssl_verify
             )
             
             if response.status_code == 200:
                 data = response.json()
-                # 检查SOAR API的业务状态码
                 if data.get("code") == 200:
                     result_data = data.get("result", [])
                     return {
@@ -239,48 +223,30 @@ class ConfigManager:
                         "success": False,
                         "message": f"API业务错误: {data.get('message', '未知错误')}",
                         "response_code": response.status_code,
-                        "api_code": data.get("code"),
-                        "error": str(data)
+                        "api_code": data.get("code")
                     }
             else:
                 return {
                     "success": False,
                     "message": f"API返回错误: {response.status_code}",
-                    "response_code": response.status_code,
-                    "error": response.text[:200]
+                    "response_code": response.status_code
                 }
         
         except requests.exceptions.Timeout:
-            return {
-                "success": False,
-                "message": "连接超时",
-                "error": "请检查网络连接和超时设置"
-            }
+            return {"success": False, "message": "连接超时", "error": "请检查网络连接和超时设置"}
         except requests.exceptions.ConnectionError:
-            return {
-                "success": False,
-                "message": "连接失败",
-                "error": "请检查API地址是否正确"
-            }
+            return {"success": False, "message": "连接失败", "error": "请检查API地址是否正确"}
         except Exception as e:
-            return {
-                "success": False,
-                "message": "测试连接时发生错误",
-                "error": str(e)
-            }
+            return {"success": False, "message": "测试连接时发生错误", "error": str(e)}
     
     def init(self):
         """初始化配置管理器"""
         try:
-            # 初始化数据库默认配置
             db_manager.init_default_configs()
-            
-            # 刷新缓存
             self._refresh_cache(force=True)
             
             logger.info("配置管理器初始化完成")
             
-            # 记录当前配置状态
             validation_result = self.validate_config()
             if validation_result["valid"]:
                 logger.info("系统配置验证通过")

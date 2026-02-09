@@ -31,10 +31,6 @@ ENV/
 *.sqlite3
 soar_mcp.db
 soar_mcp.db.*
-# Keep data directory structure but ignore database files
-data/*.db
-data/*.sqlite
-data/*.sqlite3
 
 # Logs and log directories
 logs/
