@@ -7,10 +7,10 @@
 基于 **[OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation)** 的 **Model Context Protocol (MCP)** 服务器，为 Claude Desktop、Cherry Studio、Cursor、Trae 等 AI 客户端提供安全编排、自动化和响应能力。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io/)
 
-[功能特性](#功能特性) • [快速开始](#快速开始) • [管理工具](#管理工具) • [配置说明](#配置说明) • [故障排除](#故障排除)
+[功能特性](#功能特性) • [快速开始](#快速开始) • [管理工具](#管理工具) • [配置说明](#配置说明) • [安全特性](#-安全特性) • [故障排除](#故障排除)
 
 </div>
 
@@ -23,6 +23,17 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 ![SOAR MCP Server System Architecture](docs/system-architecture.png)
 
 *SOAR MCP Server 采用双服务器架构设计，包含 MCP 服务器、Web 管理服务器、业务逻辑层、数据存储层和外部系统集成层，提供完整的安全编排自动化解决方案。*
+
+### 技术架构要点
+
+| 模块 | 技术选型 | 说明 |
+|------|---------|------|
+| MCP 服务 | FastMCP 2.x + Streamable-HTTP | 异步工具函数，共享 httpx 连接池 |
+| 管理后台 | Flask | JWT 认证，RESTful API |
+| 数据库 | SQLAlchemy ORM + SQLite | 上下文管理器 session，BigInteger ID |
+| 密码安全 | bcrypt | 带盐哈希，防彩虹表攻击 |
+| 请求上下文 | contextvars | 原生支持异步协程隔离 |
+| 日志 | RotatingFileHandler | 自动轮转，单文件 10MB，保留 5 份 |
 
 ### 🎯 OctoMation SOAR 平台
 
@@ -37,9 +48,10 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 - 🔒 **安全编排**：无缝对接 OctoMation SOAR 平台
 - 🤖 **AI 驱动**：通过多种 AI 客户端实现智能安全响应
-- ⚡ **实时响应**：快速处理安全事件和威胁
+- ⚡ **异步架构**：MCP 工具函数全异步，httpx 连接池复用
 - 🌐 **Web 管理**：直观的可视化管理界面
 - 🔧 **灵活配置**：支持多种部署和配置方式
+- 🛡️ **安全加固**：bcrypt 密码哈希、JWT 密钥持久化、日志脱敏
 
 ## 功能特性
 
@@ -51,9 +63,9 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 #### 剧本查询与执行
 - `list_playbooks_quick` - 获取简洁的剧本列表（ID、name、displayName），适用于 AI 快速理解剧本选项
 - `query_playbook_execution_params` - 根据剧本ID查询执行所需的参数定义
-- `execute_playbook` - 执行指定的 SOAR 剧本，支持参数传递
-- `query_playbook_execution_status_by_activity_id` - 根据活动ID查询剧本执行状态
-- `query_playbook_execution_result_by_activity_id` - 根据活动ID查询剧本执行的详细结果
+- `execute_playbook` - 执行指定的 SOAR 剧本，支持参数传递（异步）
+- `query_playbook_execution_status_by_activity_id` - 根据活动ID查询剧本执行状态（异步）
+- `query_playbook_execution_result_by_activity_id` - 根据活动ID查询剧本执行的详细结果（异步）
 
 #### 重要说明
 - **剧本ID格式**：支持 LONG 类型（64位整数），可以使用整数或字符串格式
@@ -63,6 +75,8 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 ### 📊 MCP 资源
 
 - `soar://playbooks` - SOAR 剧本列表
+- `soar://applications` - SOAR 应用列表
+- `soar://executions` - 执行活动记录
 
 ### 🌐 Web 管理界面
 
@@ -71,8 +85,8 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 - **剧本管理**：可视化剧本列表、状态管理、执行监控
 - **Token 管理**：API 访问凭证的创建、管理和监控
-- **系统配置**：数据库连接、同步设置、API 配置
-- **统计信息**：系统状态、执行统计、性能监控
+- **系统配置**：SOAR 连接设置、同步配置、SSL 验证开关
+- **统计信息**：系统状态、执行统计、同步时间
 
 ## 🚀 快速开始
 
@@ -81,7 +95,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 ### 📋 环境要求
 
 **系统要求**：
-- Python 3.8+
+- Python 3.9+
 - 4GB+ 内存
 - 网络连接（用于 SOAR API 访问）
 
@@ -132,16 +146,23 @@ python3 soar_mcp_server.py
 
 首次运行时，系统会自动：
 - ✅ 创建数据库和初始配置
-- ✅ 生成管理员密码（控制台会显示）
+- ✅ 生成管理员密码（**仅在控制台显示一次，不写入日志文件**）
+- ✅ 生成并持久化 JWT 签名密钥
 - ✅ 启动 MCP 服务器和 Web 管理界面
 - ⚠️ 跳过 SOAR 剧本同步（需要后续配置）
 
 **重要输出信息**：
 ```
-🔑 管理员密码: a$bC9*xYz2M&
-📊 MCP服务: http://127.0.0.1:12345/mcp?token=<user_token>
+============================================================
+  🔑 管理员初始密码: a$bC9*xYz2M&
+  ⚠️  请妥善保管，此密码不会再次显示！
+============================================================
+
+📊 MCP服务: http://127.0.0.1:12345/mcp (带token参数)
 🎛️  管理后台: http://127.0.0.1:12346/admin
 ```
+
+> ⚠️ **安全提示**：管理员密码仅在首次启动时通过控制台显示，不会记录到日志文件。请务必立即保存。如果遗失，可使用 `./reset_admin_password.sh` 重置。
 
 ![SOAR MCP服务器控制台启动界面](docs/images/admin_console.png)
 *SOAR MCP 服务器启动后的控制台输出界面*
@@ -163,7 +184,7 @@ python3 soar_mcp_server.py
 | **SOAR服务器API地址** | SOAR 平台的 API 基础地址 | `https://your-soar.com` |
 | **API Token** | SOAR 平台的 JWT 认证令牌 | `eyJhbGciOiJIUzI1NiIs...` |
 | **超时时间** | API 请求超时（秒） | `30` |
-| **同步周期** | 数据同步间隔 | `4小时` |
+| **同步周期** | 数据同步间隔 | `12小时` |
 | **剧本抓取标签** | 过滤同步的剧本标签 | `MCP` |
 
 #### 3. 测试和保存
@@ -232,7 +253,7 @@ python3 soar_mcp_server.py
 #### 其他 MCP 客户端
 
 **通用配置参数**：
-- **协议**: `HTTP`
+- **协议**: `HTTP` (Streamable-HTTP)
 - **服务器 URL**: `http://127.0.0.1:12345/mcp?token=xxxx`
 - **认证**: 通过URL参数传递token
 
@@ -281,40 +302,47 @@ python3 soar_mcp_server.py
 
 ### 管理员密码重置
 
-如果忘记了管理员密码，可以使用内置的重置脚本：
+如果忘记了管理员密码，可以使用密码管理脚本：
 
 ```bash
-# 运行密码重置脚本
+# 交互模式（推荐）- 可选随机生成或指定密码
 ./reset_admin_password.sh
+
+# 直接生成随机密码
+./reset_admin_password.sh --random
+
+# 设置指定密码
+./reset_admin_password.sh --set 'YourNewPassword'
 ```
 
 **脚本特性**：
-- 🔒 安全随机密码生成（12位强密码）
-- 🎨 用户友好的彩色界面
-- ✅ 完善的环境检查和错误处理
-- 🛡️ 确认机制防止误操作
+- 🔒 使用 **bcrypt** 安全哈希（与服务器一致）
+- 🎨 交互式彩色界面，支持密码确认
+- ⚡ 密码立即生效，无需重启服务
+- ✅ 自动检测虚拟环境和依赖
 
 **使用示例**：
 ```bash
 $ ./reset_admin_password.sh
 
 ==========================================
-    SOAR管理员密码重置工具 v1.0
+    SOAR 管理员密码工具 v2.0 (bcrypt)
 ==========================================
 
-[INFO] 🔄 开始重置SOAR管理员密码...
-[SUCCESS] ✅ 环境检查通过
+请选择操作：
+  1) 生成随机密码
+  2) 设置指定密码
+  q) 取消
 
-[WARNING] ⚠️  这将重置管理员密码，旧密码将失效
-是否继续? [y/N]: y
+请输入选项 [1/2/q]: 1
 
-[SUCCESS] 🎉 管理员密码重置成功！
+[SUCCESS] 🎉 管理员密码已更新！
 
-=================== 新密码信息 ===================
-管理员密码: *UMiWSO7#QBe
-==================================================
+======================================
+  管理员密码: xK9#mBnP2vLq
+======================================
 
-[WARNING] 请妥善保存此密码，重启服务后生效
+[INFO] 密码立即生效，无需重启服务
 ```
 
 ### 高级配置
@@ -327,15 +355,16 @@ $ ./reset_admin_password.sh
 # SOAR 平台配置
 API_URL=https://your-soar-platform.com
 API_TOKEN=your_jwt_token_here
-SSL_VERIFY=0  # 关闭SSL验证（默认）
+SSL_VERIFY=1  # 1=启用SSL验证（默认），0=禁用（仅用于自签名证书的内网环境）
 
 # MCP 服务器配置
 MCP_PORT=12345
 ADMIN_PORT=12346
+BIND_HOST=127.0.0.1  # 默认仅本地访问，设为 0.0.0.0 可对外暴露
 
-# 高级配置
-SYNC_INTERVAL=14400  # 同步周期（秒）
-SOAR_TIMEOUT=30      # API超时（秒）
+# 日志配置
+DEBUG=0
+LOG_LEVEL=INFO
 ```
 
 #### 系统服务配置
@@ -371,34 +400,36 @@ sudo systemctl enable mcp-soar
 sudo systemctl start mcp-soar
 ```
 
+## 🔒 安全特性
+
+v1.1.0+ 版本包含以下安全加固措施：
+
+| 特性 | 说明 |
+|------|------|
+| **bcrypt 密码哈希** | 替代 SHA-256，防止彩虹表攻击 |
+| **JWT 密钥持久化** | 密钥存储在数据库中，服务重启后 Token 不会失效 |
+| **密码日志脱敏** | 管理员密码仅输出到控制台，不写入日志文件 |
+| **SSL 验证默认开启** | 默认验证 HTTPS 证书，可通过配置关闭（适配自签名证书） |
+| **服务默认本地绑定** | 默认绑定 `127.0.0.1`，防止意外暴露到网络 |
+| **API 错误脱敏** | 管理 API 不返回内部异常堆栈信息 |
+| **审计日志** | 所有 MCP 工具调用均记录审计日志 |
+| **日志轮转** | 自动轮转日志文件（10MB/文件，保留 5 份） |
+| **有界执行记录** | 执行记录上限 1000 条，自动淘汰最旧条目 |
 
 ## 测试
 
 ### 运行测试套件
 
 ```bash
-# 运行所有测试
-python -m pytest tests/
-
 # 运行 MCP 客户端测试
 cd tests
 python mcp_soar_client.py
 
 # 运行自动化测试
 ./tests/test_automation.sh
-```
-
-### 测试剧本执行
-
-使用 MCP 客户端工具进行测试：
-
-```bash
-# 测试 MCP 连接
-cd tests
-python mcp_soar_client.py
 
 # 测试剧本执行功能
-python test_new_playbook_tools.py --playbook-id 1907203516548373
+python tests/test_new_playbook_tools.py --playbook-id 1907203516548373
 ```
 
 ## 配置说明
@@ -409,25 +440,22 @@ python test_new_playbook_tools.py --playbook-id 1907203516548373
 |--------|------|--------|------|
 | `API_URL` | SOAR 平台 API 地址 | - | ✅ |
 | `API_TOKEN` | API 访问令牌 | - | ✅ |
-| `MCP_PORT` | MCP 服务器端口 | 12345 | ❌ |
-| `ADMIN_PORT` | Web 管理界面端口 | 12346 | ❌ |
-| `DATABASE_URL` | 数据库连接字符串 | sqlite:///soar_mcp.db | ❌ |
-| `SSL_VERIFY` | SSL 证书验证 | 1 | ❌ |
-| `DEBUG` | 调试模式 | 0 | ❌ |
+| `MCP_PORT` | MCP 服务器端口 | `12345` | ❌ |
+| `ADMIN_PORT` | Web 管理界面端口 | `12346` | ❌ |
+| `BIND_HOST` | 服务绑定地址 | `127.0.0.1` | ❌ |
+| `SSL_VERIFY` | SSL 证书验证 | `1`（开启） | ❌ |
+| `SKIP_SYNC` | 跳过启动同步 | `false` | ❌ |
+| `DEBUG` | 调试模式 | `0` | ❌ |
+
+> 注：环境变量主要用于首次初始化。日常运行中配置通过 Web 管理后台管理，持久化在数据库中。
 
 ### 数据库配置
 
-支持多种数据库：
+默认使用 SQLite，数据库文件在首次启动时自动创建：
 
 ```bash
-# SQLite（默认）
-DATABASE_URL=sqlite:///data/soar_mcp.db
-
-# PostgreSQL
-DATABASE_URL=postgresql://user:pass@localhost/soar_mcp
-
-# MySQL
-DATABASE_URL=mysql+pymysql://user:pass@localhost/soar_mcp
+# 默认 SQLite 路径
+soar_mcp.db
 ```
 
 ## 故障排除
@@ -440,14 +468,12 @@ DATABASE_URL=mysql+pymysql://user:pass@localhost/soar_mcp
 
 **解决方案**：
 ```bash
-# 检查服务状态
-curl http://localhost:12345/health
-
 # 检查端口占用
 lsof -i :12345
 
-# 查看日志
-tail -f logs/mcp_server.log
+# 查看日志（日志文件按日期命名，自动轮转）
+ls -la logs/
+tail -f logs/soar_mcp_$(date +%Y%m%d).log
 ```
 
 #### 2. API 认证失败
@@ -455,36 +481,33 @@ tail -f logs/mcp_server.log
 **症状**：403 Forbidden 或 401 Unauthorized
 
 **解决方案**：
-- 检查 `.env` 文件中的 `API_TOKEN` 是否正确
-- 确认 token 未过期
-- 验证 API 地址是否正确
+- 检查管理后台中的 SOAR API 配置是否正确
+- 确认 API Token 未过期
+- 验证 API 地址是否可达
 
-#### 3. 数据库连接问题
-
-**症状**：数据库操作失败
+#### 3. 管理员密码丢失
 
 **解决方案**：
 ```bash
-# 检查数据库文件权限
-ls -la soar_mcp.db
-
-# 重新初始化数据库
-python -c "from models import create_tables; create_tables()"
+# 使用密码重置脚本
+./reset_admin_password.sh --random
 ```
 
-### 日志分析
+#### 4. SSL 证书验证失败
+
+**症状**：内网自签名证书导致 SOAR API 连接失败
+
+**解决方案**：
+在管理后台「系统配置」中将 `ssl_verify` 设为 `False`，或在 `.env` 文件中设置 `SSL_VERIFY=0`。
+
+#### 5. 服务需要对外暴露
+
+**默认情况下服务仅监听 127.0.0.1**，如需局域网访问：
 
 ```bash
-# 查看 MCP 服务器日志
-tail -f logs/mcp_server.log
-
-# 查看 Web 服务日志
-tail -f logs/web_server.log
-
-# 查看数据库操作日志
-tail -f logs/database.log
+# 在 .env 中设置
+BIND_HOST=0.0.0.0
 ```
-
 
 ## 许可证
 
