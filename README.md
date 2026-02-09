@@ -20,7 +20,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ## 🏗️ 系统架构
 
-![SOAR MCP Server System Architecture](docs/system-architecture.png)
+![SOAR MCP Server System Architecture](docs/images/system-architecture.png)
 
 *SOAR MCP Server 采用双服务器架构设计，包含 MCP 服务器、Web 管理服务器、业务逻辑层、数据存储层和外部系统集成层，提供完整的安全编排自动化解决方案。*
 
@@ -199,7 +199,7 @@ python3 soar_mcp_server.py
 
 #### Cherry Studio（推荐）
 
-![Cherry Studio MCP配置](docs/images/saor-mcp-configure-in-cherry-studio.jpg)
+![Cherry Studio MCP配置](docs/images/soar-mcp-configure-in-cherry-studio.jpg)
 *在 Cherry Studio 中配置 SOAR MCP 服务器*
 
 1. **打开 Cherry Studio**

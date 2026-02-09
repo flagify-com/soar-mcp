@@ -156,7 +156,7 @@ admin_app = Flask(__name__)
 def login_page():
     """登录页面"""
     try:
-        return send_file('login.html')
+        return send_file('templates/login.html')
     except FileNotFoundError:
         return jsonify({"error": "登录页面未找到"}), 404
 
@@ -213,7 +213,7 @@ def verify_token():
 def admin_page():
     """管理后台首页"""
     try:
-        return send_file('admin.html')
+        return send_file('templates/admin.html')
     except FileNotFoundError:
         return jsonify({"error": "管理页面未找到"}), 404
 
