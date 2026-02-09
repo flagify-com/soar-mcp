@@ -10,7 +10,7 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io/)
 
-[功能特性](#功能特性) • [快速开始](#快速开始) • [管理工具](#管理工具) • [配置说明](#配置说明) • [安全特性](#-安全特性) • [故障排除](#故障排除)
+[功能特性](#功能特性) • [快速开始](#快速开始) • [从旧版本升级](#-从旧版本升级) • [管理工具](#管理工具) • [配置说明](#配置说明) • [安全特性](#-安全特性) • [故障排除](#故障排除)
 
 </div>
 
@@ -297,6 +297,47 @@ python3 soar_mcp_server.py
 ```
 获取活动ID为 xxx 的剧本执行详细结果
 ```
+
+## 📦 从旧版本升级
+
+如果你正在从 **v1.0.x** 升级到 **v1.1.0+**，请注意以下重要变更。
+
+### 数据库兼容性
+
+好消息：**数据库结构基本兼容**，旧版数据库可以直接复用。
+
+| 数据类型 | 兼容性 | 说明 |
+|---------|--------|------|
+| SOAR 配置 | ✅ 自动保留 | API 地址、Token、标签等 |
+| 剧本/应用数据 | ✅ 自动保留 | 同步后的业务数据 |
+| 用户 Token | ✅ 自动保留 | MCP 访问凭证 |
+| 审计日志 | ✅ 自动保留 | 操作记录 |
+| JWT 密钥 | ✅ 自动处理 | 新版自动生成并持久化 |
+| **管理员密码** | ❌ **不兼容** | SHA-256 → bcrypt，必须重置 |
+
+> **唯一的破坏性变更**：管理员密码哈希算法从 SHA-256 升级为 bcrypt。旧密码无法在新版本中验证，升级后必须重置。
+
+### 升级步骤
+
+```bash
+# 1. 备份旧数据库
+cp soar_mcp.db soar_mcp.db.bak
+
+# 2. 更新代码
+git pull origin main
+
+# 3. 安装新依赖（新增 bcrypt）
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 4. 重置管理员密码（必须）
+./reset_admin_password.sh --random
+
+# 5. 启动服务
+python3 soar_mcp_server.py
+```
+
+> 提示：升级后所有 SOAR 配置、剧本数据、Token 等均自动保留，仅需重置管理员密码即可正常使用。
 
 ## 🔧 管理工具
 

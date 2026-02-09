@@ -1,0 +1,67 @@
+/* Local Google Fonts - Plus Jakarta Sans & JetBrains Mono */
+
+/* JetBrains Mono - 400/500/600 (single variable file) */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(jetbrains-mono-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(jetbrains-mono-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(jetbrains-mono-latin.woff2) format('woff2');
+}
+
+/* Plus Jakarta Sans - 400/500/600/700/800 (single variable file) */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(plus-jakarta-sans-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(plus-jakarta-sans-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(plus-jakarta-sans-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(plus-jakarta-sans-latin.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(plus-jakarta-sans-latin.woff2) format('woff2');
+}
