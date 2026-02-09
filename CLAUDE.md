@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **SOAR MCP Server** (v1.2.2) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
+This is a **SOAR MCP Server** (v1.3.0) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
 
 ## Architecture
 
