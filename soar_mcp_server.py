@@ -137,6 +137,23 @@ async def get_soar_client() -> httpx.AsyncClient:
     return _soar_http_client
 
 
+def invalidate_soar_client():
+    """使共享的 SOAR HTTP 客户端失效，下次请求时按最新配置重建"""
+    global _soar_http_client
+    client = _soar_http_client
+    _soar_http_client = None
+
+    if client is None or client.is_closed:
+        return
+
+    try:
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(client.aclose())
+        loop.close()
+    except Exception as e:
+        logger.warning(f"关闭旧的SOAR HTTP客户端失败: {e}")
+
+
 # ===== ID转换工具函数 =====
 
 def parse_playbook_id(playbook_id) -> int:
@@ -188,6 +205,36 @@ def admin_login():
         return jsonify({"success": False, "error": "登录过程中发生错误"}), 500
 
 
+@admin_app.route('/api/admin/password', methods=['POST'])
+@jwt_required
+def change_admin_password():
+    """修改管理员密码"""
+    try:
+        data = request.get_json() or {}
+        current_password = (data.get('currentPassword') or '').strip()
+        new_password = (data.get('newPassword') or '').strip()
+        confirm_password = (data.get('confirmPassword') or '').strip()
+
+        if not current_password:
+            return jsonify({"success": False, "error": "当前密码不能为空"}), 400
+        if not new_password:
+            return jsonify({"success": False, "error": "新密码不能为空"}), 400
+        if not confirm_password:
+            return jsonify({"success": False, "error": "确认密码不能为空"}), 400
+        if new_password != confirm_password:
+            return jsonify({"success": False, "error": "两次输入的新密码不一致"}), 400
+
+        auth_manager = admin_app.auth_manager
+        result = auth_manager.change_admin_password(current_password, new_password)
+        if result.get("success"):
+            return jsonify(result)
+        return jsonify(result), 400
+
+    except Exception as e:
+        logger.error(f"修改管理员密码失败: {e}")
+        return jsonify({"success": False, "error": "修改密码时发生内部错误"}), 500
+
+
 @admin_app.route('/api/admin/verify', methods=['GET'])
 def verify_token():
     """验证JWT Token"""
@@ -202,6 +249,12 @@ def verify_token():
 
         auth_manager = admin_app.auth_manager
         payload = auth_manager.verify_jwt(token)
+        if payload and payload.get('user_type') == 'admin':
+            current_version = auth_manager.get_admin_session_version()
+            token_version = int(payload.get('session_version', 0))
+            if token_version != current_version:
+                return jsonify({"valid": False}), 401
+
         if payload:
             return jsonify({"valid": True, "user": payload})
         else:
@@ -305,11 +358,13 @@ def update_system_config():
     try:
         from models import SystemConfigData
 
-        data = request.get_json()
+        data = request.get_json() or {}
         old_config = config_manager.get_soar_config()
 
         if 'soar_api_token' not in data:
             data['soar_api_token'] = old_config.soar_api_token
+        if 'ssl_verify' not in data:
+            data['ssl_verify'] = old_config.ssl_verify
 
         try:
             config_data = SystemConfigData(**data)
@@ -327,8 +382,16 @@ def update_system_config():
             sync_affecting_fields.append("标签配置")
         if old_config.soar_timeout != config_data.soar_timeout:
             sync_affecting_fields.append("超时设置")
+        if old_config.ssl_verify != config_data.ssl_verify:
+            sync_affecting_fields.append("SSL验证")
 
         success = config_manager.update_soar_config(config_data)
+
+        if success and (
+            old_config.soar_timeout != config_data.soar_timeout
+            or old_config.ssl_verify != config_data.ssl_verify
+        ):
+            invalidate_soar_client()
 
         if success and sync_affecting_fields:
             logger.info(f"检测到影响同步的配置变化: {', '.join(sync_affecting_fields)}")
@@ -377,6 +440,11 @@ def validate_system_config():
             if data:
                 from models import SystemConfigData
                 try:
+                    old_config = config_manager.get_soar_config()
+                    if 'soar_api_token' not in data:
+                        data['soar_api_token'] = old_config.soar_api_token
+                    if 'ssl_verify' not in data:
+                        data['ssl_verify'] = old_config.ssl_verify
                     config_data = SystemConfigData(**data)
                 except Exception as e:
                     return jsonify({"success": False, "error": f"配置数据格式错误: {e}"}), 400
@@ -398,6 +466,11 @@ def test_connection():
             if data:
                 from models import SystemConfigData
                 try:
+                    old_config = config_manager.get_soar_config()
+                    if 'soar_api_token' not in data:
+                        data['soar_api_token'] = old_config.soar_api_token
+                    if 'ssl_verify' not in data:
+                        data['ssl_verify'] = old_config.ssl_verify
                     config_data = SystemConfigData(**data)
                 except Exception as e:
                     return jsonify({"success": False, "error": f"配置数据格式错误: {e}"}), 400

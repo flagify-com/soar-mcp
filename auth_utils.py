@@ -85,6 +85,77 @@ class AuthManager:
             return False
         return self.check_password(password, stored_hash)
 
+    def get_admin_session_version(self) -> int:
+        """获取管理员会话版本，用于密码变更后让旧JWT失效"""
+        try:
+            return int(db_manager.get_system_config('admin_session_version', 1))
+        except (TypeError, ValueError):
+            return 1
+
+    def rotate_admin_session_version(self) -> int:
+        """轮换管理员会话版本并持久化"""
+        next_version = self.get_admin_session_version() + 1
+        db_manager.set_system_config(
+            'admin_session_version',
+            next_version,
+            '管理员JWT会话版本（密码变更后递增）'
+        )
+        return next_version
+
+    def validate_password_strength(self, password: str) -> list[str]:
+        """校验管理员密码强度"""
+        issues = []
+        if len(password) < 12:
+            issues.append("密码长度不能少于12位")
+
+        classes = [
+            any(ch.islower() for ch in password),
+            any(ch.isupper() for ch in password),
+            any(ch.isdigit() for ch in password),
+            any(not ch.isalnum() for ch in password),
+        ]
+        if sum(classes) < 3:
+            issues.append("需至少包含大写字母、小写字母、数字、特殊字符中的3类")
+
+        return issues
+
+    def change_admin_password(self, current_password: str, new_password: str) -> Dict[str, Any]:
+        """修改管理员密码，并使旧会话立即失效"""
+        if not self.verify_password(current_password):
+            return {"success": False, "error": "当前密码不正确"}
+
+        if current_password == new_password:
+            return {"success": False, "error": "新密码不能与当前密码相同"}
+
+        issues = self.validate_password_strength(new_password)
+        if issues:
+            return {
+                "success": False,
+                "error": "新密码不符合安全要求",
+                "issues": issues
+            }
+
+        password_hash = self.hash_password(new_password)
+        success = db_manager.create_admin_password(password_hash, "管理员在后台修改的密码")
+        if not success:
+            return {"success": False, "error": "管理员密码更新失败"}
+
+        session_version = self.rotate_admin_session_version()
+        payload = {
+            'user_type': 'admin',
+            'session_id': secrets.token_urlsafe(8),
+            'session_version': session_version,
+            'login_time': datetime.now(timezone.utc).isoformat()
+        }
+        jwt_token = self.generate_jwt(payload)
+
+        logger.info("管理员密码修改成功，旧会话已失效")
+        return {
+            "success": True,
+            "message": "管理员密码已更新，旧会话已失效",
+            "jwt_token": jwt_token
+        }
+
     def generate_jwt(self, payload: Dict[str, Any], expires_hours: int = 24) -> str:
         """生成JWT token"""
         try:
@@ -114,6 +185,7 @@ class AuthManager:
             payload = {
                 'user_type': 'admin',
                 'session_id': secrets.token_urlsafe(8),
+                'session_version': self.get_admin_session_version(),
                 'login_time': datetime.now(timezone.utc).isoformat()
             }
             return self.generate_jwt(payload)
@@ -141,6 +213,12 @@ def jwt_required(f):
             payload = auth_manager.verify_jwt(token)
             if not payload:
                 return jsonify({'error': 'token无效或已过期'}), 401
+
+            if payload.get('user_type') == 'admin':
+                current_version = auth_manager.get_admin_session_version()
+                token_version = int(payload.get('session_version', 0))
+                if token_version != current_version:
+                    return jsonify({'error': 'token已失效，请重新登录'}), 401
 
             request.user = payload
             return f(*args, **kwargs)

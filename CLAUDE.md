@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **SOAR MCP Server** (v1.5.0) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
+This is a **SOAR MCP Server** (v1.5.2) designed specifically for the [OctoMation SOAR Platform](https://github.com/flagify-com/OctoMation). It bridges SOAR (Security Orchestration, Automation and Response) capabilities to AI clients through the Model Context Protocol (MCP).
 
 ## Architecture
 
@@ -61,7 +61,7 @@ pip install -r requirements.txt
 
 # Copy environment template
 cp .env.example .env
-# Edit .env with your OctoMation SOAR API credentials
+# Edit .env with server runtime settings if needed
 ```
 
 ### Running the Server
@@ -174,7 +174,7 @@ Replace `xxxx` with actual API token from web admin interface.
 
 ## Important Notes
 
-- SSL verification **enabled by default** (`SSL_VERIFY=1`); set to `0` only for self-signed certificate environments
+- SSL verification is configured in the web admin system settings
 - Supports both Chinese and English interfaces
 - Requires active OctoMation SOAR platform connection
 - `contextvars.ContextVar` used for async-safe request context (not `threading.local`)

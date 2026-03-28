@@ -10,13 +10,22 @@
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io/)
 
-[功能特性](#功能特性) • [快速开始](#快速开始) • [从旧版本升级](#-从旧版本升级) • [管理工具](#管理工具) • [配置说明](#配置说明) • [安全特性](#-安全特性) • [故障排除](#故障排除)
+[功能特性](#功能特性) • [快速开始](#快速开始) • [更新日志](CHANGELOG.md) • [从旧版本升级](#-从旧版本升级) • [管理工具](#管理工具) • [配置说明](#配置说明) • [安全特性](#-安全特性) • [故障排除](#故障排除)
 
 </div>
 
 ## 概述
 
 SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专为 [OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation) 设计**。通过 Model Context Protocol 将 SOAR (Security Orchestration, Automation and Response) 能力直接集成到各种 AI 客户端中，包括 Claude Desktop、Cherry Studio、Cursor、Trae 等。它提供了完整的安全事件管理、剧本执行、威胁情报查询等功能，让 AI 助手具备专业的网络安全响应能力。
+
+## 🆕 v1.5.2 更新摘要
+
+- **配置治理**：SOAR 连接配置统一迁移到后台数据库管理，移除运行时 `.env` 配置误导
+- **首次引导**：首次登录未配置 SOAR 时，自动进入系统配置并显示 onboarding 引导
+- **安全增强**：新增管理员密码修改能力，旧后台会话在改密后立即失效
+- **界面优化**：管理员密码管理从系统配置中独立为主菜单「密码管理」
+
+完整变更请查看 `CHANGELOG.md`。
 
 ## 🏗️ 系统架构
 
@@ -87,6 +96,7 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 - **剧本管理**：可视化剧本列表、状态管理、执行监控
 - **Token 管理**：API 访问凭证的创建、管理和监控
 - **系统配置**：SOAR 连接设置、同步配置、SSL 验证开关
+- **密码管理**：独立的管理员密码修改入口和安全策略说明
 - **统计信息**：系统状态、执行统计、同步时间
 
 ## 🚀 快速开始
@@ -167,6 +177,8 @@ python3 soar_mcp_server.py
 
 > ⚠️ **安全提示**：管理员密码仅在首次启动时通过控制台显示，不会记录到日志文件。请务必立即保存。如果遗失，可使用 `./reset_admin_password.sh` 重置。
 
+> 🔐 **上线建议**：首次登录后台后，请立即前往导航栏的「密码管理」页面修改管理员密码，再继续进行 SOAR 平台初始化配置。
+
 ![SOAR MCP服务器控制台启动界面](docs/images/admin_console.png)
 *SOAR MCP 服务器启动后的控制台输出界面*
 
@@ -176,7 +188,7 @@ python3 soar_mcp_server.py
 
 1. 打开浏览器，访问 `http://127.0.0.1:12346/admin`
 2. 使用控制台显示的管理员密码登录
-3. 点击导航栏的「系统配置」
+3. 未配置 SOAR 时，系统会自动进入「系统配置」并显示首次配置引导
 
 #### 2. 配置 SOAR 连接
 
@@ -187,6 +199,7 @@ python3 soar_mcp_server.py
 | **SOAR服务器API地址** | SOAR 平台的 API 基础地址 | `https://your-soar.com` |
 | **API Token** | SOAR 平台的 JWT 认证令牌 | `eyJhbGciOiJIUzI1NiIs...` |
 | **超时时间** | API 请求超时（秒） | `30` |
+| **SSL 证书验证** | HTTPS 证书校验开关 | `开启` |
 | **同步周期** | 数据同步间隔 | `12小时` |
 | **剧本抓取标签** | 过滤同步的剧本标签 | `MCP` |
 
@@ -195,6 +208,8 @@ python3 soar_mcp_server.py
 1. 点击「测试连接」按钮验证配置
 2. 看到 ✅ "API连接测试成功！" 后，点击「保存配置」
 3. 系统将自动开始同步 SOAR 剧本数据
+
+> 说明：SOAR 连接参数现在以数据库配置为准，运行中的服务不会再从 `.env` 读取 `API_URL`、`API_TOKEN`、`SSL_VERIFY` 作为运行时配置。
 
 ### 🤖 第三步：MCP 客户端配置
 
@@ -433,14 +448,9 @@ $ ./reset_admin_password.sh
 
 #### 环境变量配置
 
-如需固定配置，可创建 `.env` 文件：
+SOAR 平台连接信息现在统一在管理后台初始化和维护，`.env` 只保留服务器自身运行参数：
 
 ```bash
-# SOAR 平台配置
-API_URL=https://your-soar-platform.com
-API_TOKEN=your_jwt_token_here
-SSL_VERIFY=1  # 1=启用SSL验证（默认），0=禁用（仅用于自签名证书的内网环境）
-
 # MCP 服务器配置
 MCP_PORT=12345
 ADMIN_PORT=12346
@@ -529,16 +539,13 @@ python tests/test_new_playbook_tools.py --playbook-id 1907203516548373
 
 | 变量名 | 说明 | 默认值 | 必需 |
 |--------|------|--------|------|
-| `API_URL` | SOAR 平台 API 地址 | - | ✅ |
-| `API_TOKEN` | API 访问令牌 | - | ✅ |
 | `MCP_PORT` | MCP 服务器端口 | `12345` | ❌ |
 | `ADMIN_PORT` | Web 管理界面端口 | `12346` | ❌ |
 | `BIND_HOST` | 服务绑定地址 | `127.0.0.1` | ❌ |
-| `SSL_VERIFY` | SSL 证书验证 | `1`（开启） | ❌ |
 | `SKIP_SYNC` | 跳过启动同步 | `false` | ❌ |
 | `DEBUG` | 调试模式 | `0` | ❌ |
 
-> 注：环境变量主要用于首次初始化。日常运行中配置通过 Web 管理后台管理，持久化在数据库中。
+> 注：SOAR 连接配置不再使用环境变量，统一通过 Web 管理后台管理并持久化到数据库中。
 
 ### 数据库配置
 
@@ -589,7 +596,7 @@ tail -f logs/soar_mcp_$(date +%Y%m%d).log
 **症状**：内网自签名证书导致 SOAR API 连接失败
 
 **解决方案**：
-在管理后台「系统配置」中将 `ssl_verify` 设为 `False`，或在 `.env` 文件中设置 `SSL_VERIFY=0`。
+在管理后台「系统配置」中关闭“SSL 证书验证”，保存后重新测试连接。
 
 #### 5. 服务需要对外暴露
 

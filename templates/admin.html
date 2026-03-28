@@ -379,6 +379,17 @@
             font-weight: 500;
         }
 
+        .warning {
+            background: #fffbeb;
+            color: #b45309;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            border: 1px solid #fcd34d;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
         /* ===== Modal ===== */
         .modal {
             display: none;
@@ -916,6 +927,226 @@
             font-weight: 700;
         }
 
+        .onboarding-card {
+            margin: 0 1.5rem 1.25rem;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(59, 130, 246, 0.18);
+            background:
+                radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 38%),
+                linear-gradient(135deg, rgba(239, 246, 255, 0.96), rgba(248, 250, 252, 0.96));
+            box-shadow: var(--shadow-sm);
+        }
+
+        .onboarding-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(37, 99, 235, 0.1);
+            color: #1d4ed8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .onboarding-title {
+            margin: 0 0 0.45rem;
+            color: var(--text-primary);
+            font-size: 1.15rem;
+            font-weight: 800;
+        }
+
+        .onboarding-text {
+            margin: 0 0 1rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        .onboarding-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .onboarding-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .onboarding-step-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-cyan));
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+
+        .onboarding-step strong {
+            display: block;
+            margin-bottom: 0.2rem;
+            color: var(--text-primary);
+            font-size: 0.88rem;
+        }
+
+        .onboarding-step span:last-child {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+
+        .toggle-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            min-height: 48px;
+            padding: 0.8rem 0.95rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+            background: rgba(248, 250, 252, 0.9);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .toggle-control input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-indigo);
+            cursor: pointer;
+        }
+
+        .password-note {
+            margin-top: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.55;
+        }
+
+        .security-layout {
+            display: grid;
+            grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+            gap: 1.25rem;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .security-panel,
+        .security-form-card {
+            min-width: 0;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .security-panel {
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 42%),
+                linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(241, 245, 249, 0.98));
+        }
+
+        .security-form-card {
+            background: var(--bg-body);
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--text-primary);
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .security-title {
+            margin: 0 0 0.45rem;
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .security-text {
+            margin: 0 0 1rem;
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.65;
+        }
+
+        .security-rules {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .security-rule {
+            padding: 0.85rem 0.9rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+        }
+
+        .security-rule strong {
+            display: block;
+            margin-bottom: 0.18rem;
+            color: var(--text-primary);
+            font-size: 0.84rem;
+            font-weight: 700;
+        }
+
+        .security-rule span {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .security-form-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .security-form-grid .label-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .security-form-grid .form-help {
+            font-size: 0.78rem;
+            line-height: 1.5;
+        }
+
+        .security-form-card .password-input-container .form-input {
+            min-width: 0;
+        }
+
+        .security-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+
         .status-item {
             display: flex;
             justify-content: space-between;
@@ -1026,6 +1257,11 @@
                 padding: 1rem;
             }
 
+            .security-layout {
+                grid-template-columns: 1fr;
+                padding: 0 1rem 1rem;
+            }
+
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
@@ -1048,6 +1284,7 @@
                 <a href="#" class="nav-item active" id="nav-playbooks">剧本管理</a>
                 <a href="#" class="nav-item" id="nav-tokens">Token管理</a>
                 <a href="#" class="nav-item" id="nav-config">系统配置</a>
+                <a href="#" class="nav-item" id="nav-security">密码管理</a>
                 <a href="#" class="nav-item" id="nav-stats">统计信息</a>
             </div>
             <div class="nav-right">
@@ -1336,17 +1573,52 @@
         </style>
 
         <!-- 系统配置区域 -->
-        <div class="card" id="config-section" style="display: none;">
-            <div class="card-header">
-                <h2 class="card-title">系统配置</h2>
-                <div class="config-actions">
-                    <button id="test-connection-btn" class="btn btn-primary" onclick="testConnection()">测试连接</button>
-                    <button id="save-config-btn" class="btn btn-primary" onclick="saveConfiguration()">保存配置</button>
+	        <div class="card" id="config-section" style="display: none;">
+	            <div class="card-header">
+	                <h2 class="card-title">系统配置</h2>
+	                <div class="config-actions">
+	                    <button id="test-connection-btn" class="btn btn-primary" onclick="testConnection()">测试连接</button>
+	                    <button id="save-config-btn" class="btn btn-primary" onclick="saveConfiguration()">保存配置</button>
+	                </div>
+	            </div>
+
+                <div id="config-onboarding" class="onboarding-card" style="display: none;">
+                    <div class="onboarding-badge">First-time setup</div>
+                    <h3 class="onboarding-title">先完成 SOAR 平台连接配置</h3>
+                    <p class="onboarding-text">
+                        当前实例还没有可用的 SOAR 连接信息。完成下面三步后，系统会自动开始同步剧本与相关数据。
+                    </p>
+                    <div class="onboarding-steps">
+                        <div class="onboarding-step">
+                            <span class="onboarding-step-index">1</span>
+                            <span>
+                                <strong>填写 API 地址</strong>
+                                输入 SOAR 平台的 API 基础地址。
+                            </span>
+                        </div>
+                        <div class="onboarding-step">
+                            <span class="onboarding-step-index">2</span>
+                            <span>
+                                <strong>填写 Token 与 SSL 策略</strong>
+                                配置认证令牌，并根据证书环境决定是否开启校验。
+                            </span>
+                        </div>
+                        <div class="onboarding-step">
+                            <span class="onboarding-step-index">3</span>
+                            <span>
+                                <strong>测试后保存</strong>
+                                保存成功后即可回到剧本管理查看同步结果。
+                            </span>
+                        </div>
+                    </div>
+                    <div class="config-actions">
+                        <button type="button" class="btn btn-primary" onclick="focusConfigSetup()">开始配置</button>
+                        <button type="button" class="btn btn-secondary" onclick="dismissConfigOnboarding()">稍后处理</button>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="config-container">
-                <div class="config-form">
+	            
+	            <div class="config-container">
+	                <div class="config-form">
                     <div class="form-group">
                         <div class="label-row">
                             <label for="soar-api-url">SOAR服务器API地址</label>
@@ -1368,17 +1640,28 @@
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <div class="label-row">
-                            <label for="soar-timeout">超时时间（秒）</label>
-                            <small class="form-help">API请求的超时时间，建议30-60秒</small>
-                        </div>
-                        <input type="number" id="soar-timeout" class="form-input" min="1" max="300" value="30" required>
-                    </div>
+	                    <div class="form-group">
+	                        <div class="label-row">
+	                            <label for="soar-timeout">超时时间（秒）</label>
+	                            <small class="form-help">API请求的超时时间，建议30-60秒</small>
+	                        </div>
+	                        <input type="number" id="soar-timeout" class="form-input" min="1" max="300" value="30" required>
+	                    </div>
 
-                    <div class="form-group">
-                        <div class="label-row">
-                            <label for="sync-interval">同步周期</label>
+                        <div class="form-group">
+                            <div class="label-row">
+                                <label for="ssl-verify">SSL 证书验证</label>
+                                <small class="form-help">默认开启。仅在内网自签名证书场景下关闭。</small>
+                            </div>
+                            <label class="toggle-control" for="ssl-verify">
+                                <input type="checkbox" id="ssl-verify" checked>
+                                <span>启用 HTTPS 证书校验</span>
+                            </label>
+                        </div>
+
+	                    <div class="form-group">
+	                        <div class="label-row">
+	                            <label for="sync-interval">同步周期</label>
                             <small class="form-help">剧本和应用的自动同步周期，默认4小时</small>
                         </div>
                         <select id="sync-interval" class="form-input" required>
@@ -1406,8 +1689,8 @@
                     </div>
                 </div>
                 
-                <div class="config-status" id="config-status">
-                    <h3>配置状态</h3>
+	                <div class="config-status" id="config-status">
+	                    <h3>配置状态</h3>
                     <div class="status-item">
                         <span class="status-label">配置验证:</span>
                         <span class="status-value" id="config-valid">未验证</span>
@@ -1419,12 +1702,96 @@
                     <div class="status-item">
                         <span class="status-label">最后更新:</span>
                         <span class="status-value" id="config-updated">-</span>
+	                </div>
+	            </div>
+
+		        </div>
+
+	        </div>
+
+            <div class="card" id="security-section" style="display: none;">
+                <div class="card-header">
+                    <h2 class="card-title">密码管理</h2>
+                </div>
+
+                <div class="security-layout">
+                    <div class="security-panel">
+                        <div class="security-badge">Security</div>
+                        <h3 class="security-title">轮换后台管理员密码</h3>
+                        <p class="security-text">
+                            默认管理员密码仅适合首次交付时引导使用。进入客户环境后，建议立即在这里完成密码轮换。
+                        </p>
+
+                        <div class="security-rules">
+                            <div class="security-rule">
+                                <strong>长度要求</strong>
+                                <span>新密码长度至少 12 位。</span>
+                            </div>
+                            <div class="security-rule">
+                                <strong>复杂度要求</strong>
+                                <span>需至少包含大写字母、小写字母、数字、特殊字符中的 3 类。</span>
+                            </div>
+                            <div class="security-rule">
+                                <strong>会话策略</strong>
+                                <span>修改成功后，旧的后台登录会话会立即失效，需要重新认证。</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="security-form-card">
+                        <div class="security-form-grid">
+                            <div class="form-group">
+                                <div class="label-row">
+                                    <label for="current-admin-password">当前密码</label>
+                                    <small class="form-help">请输入当前管理员密码以确认身份</small>
+                                </div>
+                                <div class="password-input-container">
+                                    <input type="password" id="current-admin-password" class="form-input" placeholder="输入当前管理员密码" autocomplete="current-password">
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('current-admin-password')">
+                                        <span class="eye-icon" id="current-admin-password-eye">👁️</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="label-row">
+                                    <label for="new-admin-password">新密码</label>
+                                    <small class="form-help">建议使用独立且未复用的高强度密码</small>
+                                </div>
+                                <div class="password-input-container">
+                                    <input type="password" id="new-admin-password" class="form-input" placeholder="输入新密码" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('new-admin-password')">
+                                        <span class="eye-icon" id="new-admin-password-eye">👁️</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="label-row">
+                                    <label for="confirm-admin-password">确认新密码</label>
+                                    <small class="form-help">再次输入，确保与上方保持一致</small>
+                                </div>
+                                <div class="password-input-container">
+                                    <input type="password" id="confirm-admin-password" class="form-input" placeholder="再次输入新密码" autocomplete="new-password">
+                                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirm-admin-password')">
+                                        <span class="eye-icon" id="confirm-admin-password-eye">👁️</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="security-actions">
+                            <button id="update-password-btn" class="btn btn-primary" onclick="updateAdminPassword()">更新管理员密码</button>
+                        </div>
+
+                        <div class="password-note">
+                            修改成功后，当前页面会续签为新会话；其他旧后台会话中的 JWT 会被立即作废。
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- 统计信息页面 -->
+	        
+	        <!-- 统计信息页面 -->
         <div class="card" id="stats-section" style="display: none;">
             <div class="card-header">
                 <h2 class="card-title">统计信息</h2>
@@ -1535,10 +1902,12 @@
             }
         }
 
-        // 全局状态
-        let playbooks = [];
-        let currentPage = 1;
-        const itemsPerPage = 20;
+	        // 全局状态
+	        let playbooks = [];
+	        let currentPage = 1;
+	        const itemsPerPage = 20;
+            let systemConfigState = null;
+            const CONFIG_ONBOARDING_DISMISSED_KEY = 'soar-config-onboarding-dismissed';
         
         // DOM 元素
         const alertContainer = document.getElementById('alert-container');
@@ -1552,12 +1921,18 @@
         const pageNumbers = document.getElementById('page-numbers');
         
         // 显示通知
-        function showAlert(message, type = 'success') {
-            const alert = document.createElement('div');
-            alert.className = type === 'error' ? 'error' : 'success';
-            alert.textContent = message;
-            alertContainer.innerHTML = '';
-            alertContainer.appendChild(alert);
+	        function showAlert(message, type = 'success') {
+	            const alert = document.createElement('div');
+                if (type === 'error') {
+                    alert.className = 'error';
+                } else if (type === 'warning') {
+                    alert.className = 'warning';
+                } else {
+                    alert.className = 'success';
+                }
+	            alert.textContent = message;
+	            alertContainer.innerHTML = '';
+	            alertContainer.appendChild(alert);
 
             setTimeout(() => {
                 alert.remove();
@@ -1644,6 +2019,57 @@
                     }
                 }, 300);
             }, 2000);
+        }
+
+        function isSoarConfigComplete(configData) {
+            return Boolean(
+                configData
+                && String(configData.soar_api_url || '').trim()
+                && String(configData.soar_api_token || '').trim()
+            );
+        }
+
+        function updateConfigOnboarding(configData) {
+            systemConfigState = configData;
+
+            const onboarding = document.getElementById('config-onboarding');
+            const configValid = document.getElementById('config-valid');
+            const connectionStatus = document.getElementById('connection-status');
+            const dismissed = localStorage.getItem(CONFIG_ONBOARDING_DISMISSED_KEY) === '1';
+            const incomplete = !isSoarConfigComplete(configData);
+
+            if (incomplete) {
+                onboarding.style.display = dismissed ? 'none' : 'block';
+                configValid.textContent = '待配置';
+                configValid.className = 'status-warning';
+                connectionStatus.textContent = '待配置';
+                connectionStatus.className = 'status-warning';
+                return;
+            }
+
+            onboarding.style.display = 'none';
+            localStorage.removeItem(CONFIG_ONBOARDING_DISMISSED_KEY);
+            configValid.textContent = '配置已保存';
+            configValid.className = 'status-success';
+            if (connectionStatus.textContent === '待配置') {
+                connectionStatus.textContent = '未测试';
+                connectionStatus.className = 'status-value';
+            }
+        }
+
+        function dismissConfigOnboarding() {
+            localStorage.setItem(CONFIG_ONBOARDING_DISMISSED_KEY, '1');
+            updateConfigOnboarding(systemConfigState);
+            showAlert('稍后仍可在“系统配置”中继续完成初始化', 'warning');
+        }
+
+        function focusConfigSetup() {
+            showTab('config');
+            setTimeout(() => {
+                const apiUrlInput = document.getElementById('soar-api-url');
+                apiUrlInput.focus();
+                apiUrlInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
         }
         
         // 格式化日期
@@ -2026,6 +2452,13 @@
         async function testConnection() {
             const testBtn = document.getElementById('test-connection-btn');
             const connectionStatus = document.getElementById('connection-status');
+            const apiUrl = document.getElementById('soar-api-url').value.trim();
+            const apiToken = document.getElementById('soar-api-token').value.trim();
+            const timeout = parseInt(document.getElementById('soar-timeout').value);
+            const syncInterval = parseInt(document.getElementById('sync-interval').value);
+            const sslVerify = document.getElementById('ssl-verify').checked;
+            const labelElements = document.querySelectorAll('.label-tag .label-name');
+            const labels = Array.from(labelElements).map(el => el.textContent.trim()).filter(label => label);
             
             testBtn.disabled = true;
             testBtn.textContent = '测试中...';
@@ -2033,23 +2466,36 @@
             connectionStatus.className = 'status-warning';
             
             try {
+                const configPayload = {
+                    soar_api_url: apiUrl,
+                    soar_timeout: timeout,
+                    sync_interval: syncInterval,
+                    soar_labels: labels,
+                    ssl_verify: sslVerify
+                };
+
+                if (!apiToken.includes('***')) {
+                    configPayload.soar_api_token = apiToken;
+                }
+
                 const response = await apiCall('/api/admin/config/test', {
                     method: 'POST',
-                    body: JSON.stringify({}) // 发送空对象，使用当前数据库配置
+                    body: JSON.stringify(configPayload)
                 });
 
                 if (!response) return;
                 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.success && data.data && data.data.success) {
                     connectionStatus.textContent = '连接成功';
                     connectionStatus.className = 'status-success';
                     showAlert('API连接测试成功！', 'success');
                 } else {
                     connectionStatus.textContent = '连接失败';
                     connectionStatus.className = 'status-error';
-                    showAlert(`连接测试失败: ${data.message}`, 'error');
+                    const errorMessage = data.data?.message || data.error || '未知错误';
+                    showAlert(`连接测试失败: ${errorMessage}`, 'error');
                 }
             } catch (error) {
                 connectionStatus.textContent = '连接失败';
@@ -2075,6 +2521,7 @@
             const apiToken = document.getElementById('soar-api-token').value.trim();
             const timeout = parseInt(document.getElementById('soar-timeout').value);
             const syncInterval = parseInt(document.getElementById('sync-interval').value);
+            const sslVerify = document.getElementById('ssl-verify').checked;
 
             // 收集标签
             const labelElements = document.querySelectorAll('.label-tag .label-name');
@@ -2085,7 +2532,8 @@
                 soar_api_url: apiUrl,
                 soar_timeout: timeout,
                 sync_interval: syncInterval,
-                soar_labels: labels
+                soar_labels: labels,
+                ssl_verify: sslVerify
             };
             
             // 检查Token是否被修改（如果不是打码格式，说明用户输入了新Token）
@@ -2116,11 +2564,15 @@
                     configValid.textContent = '配置有效';
                     configValid.className = 'status-success';
                     configUpdated.textContent = new Date().toLocaleString('zh-CN');
+                    await loadSystemConfig();
+                    if (isSoarConfigComplete(systemConfigState)) {
+                        loadPlaybooks();
+                    }
                     showAlert('配置保存成功！', 'success');
                 } else {
                     configValid.textContent = '配置无效';
                     configValid.className = 'status-error';
-                    showAlert(`配置保存失败: ${data.message}`, 'error');
+                    showAlert(`配置保存失败: ${data.error || data.message}`, 'error');
                 }
             } catch (error) {
                 configValid.textContent = '配置无效';
@@ -2130,6 +2582,61 @@
             
             saveBtn.disabled = false;
             saveBtn.textContent = '保存配置';
+        }
+
+        async function updateAdminPassword() {
+            const updateBtn = document.getElementById('update-password-btn');
+            const currentPassword = document.getElementById('current-admin-password').value.trim();
+            const newPassword = document.getElementById('new-admin-password').value.trim();
+            const confirmPassword = document.getElementById('confirm-admin-password').value.trim();
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                showAlert('请完整填写当前密码、新密码和确认密码', 'error');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showAlert('两次输入的新密码不一致', 'error');
+                return;
+            }
+
+            updateBtn.disabled = true;
+            updateBtn.textContent = '更新中...';
+
+            try {
+                const response = await apiCall('/api/admin/password', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword,
+                        confirmPassword
+                    })
+                });
+
+                if (!response) return;
+
+                const data = await response.json();
+                if (data.success) {
+                    if (data.jwt_token) {
+                        localStorage.setItem('jwt_token', data.jwt_token);
+                    }
+
+                    document.getElementById('current-admin-password').value = '';
+                    document.getElementById('new-admin-password').value = '';
+                    document.getElementById('confirm-admin-password').value = '';
+                    showAlert(data.message || '管理员密码已更新', 'success');
+                } else {
+                    const issuesText = Array.isArray(data.issues) && data.issues.length
+                        ? `：${data.issues.join('；')}`
+                        : '';
+                    showAlert(`${data.error || '管理员密码更新失败'}${issuesText}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`管理员密码更新失败: ${error.message}`, 'error');
+            } finally {
+                updateBtn.disabled = false;
+                updateBtn.textContent = '更新管理员密码';
+            }
         }
         
         // 标签管理功能
@@ -2178,6 +2685,7 @@
                     document.getElementById('soar-api-url').value = data.data.soar_api_url || '';
                     document.getElementById('soar-api-token').value = data.data.soar_api_token || '';
                     document.getElementById('soar-timeout').value = data.data.soar_timeout || 30;
+                    document.getElementById('ssl-verify').checked = data.data.ssl_verify !== false;
                     document.getElementById('sync-interval').value = data.data.sync_interval || 14400;
                     
                     // 填充标签列表
@@ -2197,6 +2705,9 @@
                         `;
                         labelsList.appendChild(labelElement);
                     });
+
+                    updateConfigOnboarding(data.data);
+                    return data.data;
                 }
             } catch (error) {
                 console.error('加载系统配置失败:', error);
@@ -2212,6 +2723,15 @@
                     <button type="button" class="label-remove" onclick="this.parentElement.remove()">×</button>
                 `;
                 labelsList.appendChild(labelElement);
+                updateConfigOnboarding({
+                    soar_api_url: '',
+                    soar_api_token: '',
+                    soar_timeout: 30,
+                    sync_interval: 14400,
+                    soar_labels: ['MCP'],
+                    ssl_verify: true
+                });
+                return null;
             }
         }
 
@@ -2499,6 +3019,7 @@
             document.getElementById('playbooks-section').style.display = 'none';
             document.getElementById('tokens-section').style.display = 'none';
             document.getElementById('config-section').style.display = 'none';
+            document.getElementById('security-section').style.display = 'none';
             document.getElementById('stats-section').style.display = 'none';
 
             // 移除所有导航项的active类
@@ -2518,6 +3039,9 @@
                 document.getElementById('config-section').style.display = 'block';
                 document.getElementById('nav-config').classList.add('active');
                 loadSystemConfig(); // 加载系统配置
+            } else if (tabName === 'security') {
+                document.getElementById('security-section').style.display = 'block';
+                document.getElementById('nav-security').classList.add('active');
             } else if (tabName === 'stats') {
                 document.getElementById('stats-section').style.display = 'block';
                 document.getElementById('nav-stats').classList.add('active');
@@ -2547,6 +3071,11 @@
                 showTab('config');
             });
 
+            document.getElementById('nav-security').addEventListener('click', (e) => {
+                e.preventDefault();
+                showTab('security');
+            });
+
             document.getElementById('nav-stats').addEventListener('click', (e) => {
                 e.preventDefault();
                 showTab('stats');
@@ -2566,21 +3095,34 @@
                 }
             });
             
-            nextPageBtn.addEventListener('click', () => {
-                const totalPages = Math.ceil(playbooks.length / itemsPerPage);
-                if (currentPage < totalPages) {
-                    goToPage(currentPage + 1);
-                }
-            });
-            
-            loadPlaybooks();
-            
-            // 定期刷新（每30秒）
-            setInterval(loadPlaybooks, 30000);
+	            nextPageBtn.addEventListener('click', () => {
+	                const totalPages = Math.ceil(playbooks.length / itemsPerPage);
+	                if (currentPage < totalPages) {
+	                    goToPage(currentPage + 1);
+	                }
+	            });
 
-            // 添加玻璃拟态交互效果
-            initGlassmorphismEffects();
-        });
+                (async () => {
+                    const configData = await loadSystemConfig();
+                    if (isSoarConfigComplete(configData)) {
+                        showTab('playbooks');
+                        loadPlaybooks();
+                    } else {
+                        showTab('config');
+                        showAlert('检测到未完成 SOAR 初始化，请先完成系统配置', 'warning');
+                    }
+                })();
+
+	            // 定期刷新（每30秒）
+	            setInterval(() => {
+                    if (isSoarConfigComplete(systemConfigState)) {
+                        loadPlaybooks();
+                    }
+                }, 30000);
+
+	            // 添加玻璃拟态交互效果
+	            initGlassmorphismEffects();
+	        });
 
         // 初始化交互效果（轻量级）
         function initGlassmorphismEffects() {
