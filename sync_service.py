@@ -12,15 +12,11 @@ from typing import List, Optional, Dict, Any
 from urllib.parse import urljoin
 
 import httpx
-from dotenv import load_dotenv
 import os
 
 from models import DatabaseManager, PlaybookData, PlaybookParam, AppData, ActionData, ActionParam, ActionResult
 from logger_config import logger
 from config_manager import config_manager
-
-# 加载环境变量
-load_dotenv()
 
 # 注意：不再全局覆盖 SSL 上下文，SSL 验证通过各 HTTP 客户端实例单独配置
 

@@ -257,6 +257,7 @@ class SystemConfigData(BaseModel):
     soar_timeout: int = Field(default=30, description="API超时时间(秒)")
     sync_interval: int = Field(default=14400, description="同步周期(秒)")
     soar_labels: List[str] = Field(default=["MCP"], description="剧本抓取标签列表")
+    ssl_verify: bool = Field(default=True, description="SSL证书验证开关")
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -806,20 +807,13 @@ class DatabaseManager:
             existing_configs = self.get_all_system_configs()
             if not existing_configs:
                 logger.info("初始化默认系统配置...")
-                import os
-                from dotenv import load_dotenv
-                env_path = ".env"
-                if os.path.exists(env_path):
-                    load_dotenv(env_path)
-                    logger.info("从.env文件迁移配置到数据库")
-
                 default_configs = {
-                    "soar_api_url": os.getenv("API_URL", ""),
-                    "soar_api_token": os.getenv("API_TOKEN", ""),
-                    "soar_timeout": int(os.getenv("SOAR_TIMEOUT", "30")),
-                    "sync_interval": int(os.getenv("SYNC_INTERVAL", "14400")),
+                    "soar_api_url": "",
+                    "soar_api_token": "",
+                    "soar_timeout": 30,
+                    "sync_interval": 14400,
                     "soar_labels": ["MCP"],
-                    "ssl_verify": os.getenv("SSL_VERIFY", "1") != "0"
+                    "ssl_verify": True
                 }
                 for key, value in default_configs.items():
                     self.set_system_config(key, value, f"系统默认配置: {key}")

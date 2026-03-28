@@ -187,6 +187,7 @@ python3 soar_mcp_server.py
 | **SOAR服务器API地址** | SOAR 平台的 API 基础地址 | `https://your-soar.com` |
 | **API Token** | SOAR 平台的 JWT 认证令牌 | `eyJhbGciOiJIUzI1NiIs...` |
 | **超时时间** | API 请求超时（秒） | `30` |
+| **SSL 证书验证** | HTTPS 证书校验开关 | `开启` |
 | **同步周期** | 数据同步间隔 | `12小时` |
 | **剧本抓取标签** | 过滤同步的剧本标签 | `MCP` |
 
@@ -433,14 +434,9 @@ $ ./reset_admin_password.sh
 
 #### 环境变量配置
 
-如需固定配置，可创建 `.env` 文件：
+SOAR 平台连接信息现在统一在管理后台初始化和维护，`.env` 只保留服务器自身运行参数：
 
 ```bash
-# SOAR 平台配置
-API_URL=https://your-soar-platform.com
-API_TOKEN=your_jwt_token_here
-SSL_VERIFY=1  # 1=启用SSL验证（默认），0=禁用（仅用于自签名证书的内网环境）
-
 # MCP 服务器配置
 MCP_PORT=12345
 ADMIN_PORT=12346
@@ -529,16 +525,13 @@ python tests/test_new_playbook_tools.py --playbook-id 1907203516548373
 
 | 变量名 | 说明 | 默认值 | 必需 |
 |--------|------|--------|------|
-| `API_URL` | SOAR 平台 API 地址 | - | ✅ |
-| `API_TOKEN` | API 访问令牌 | - | ✅ |
 | `MCP_PORT` | MCP 服务器端口 | `12345` | ❌ |
 | `ADMIN_PORT` | Web 管理界面端口 | `12346` | ❌ |
 | `BIND_HOST` | 服务绑定地址 | `127.0.0.1` | ❌ |
-| `SSL_VERIFY` | SSL 证书验证 | `1`（开启） | ❌ |
 | `SKIP_SYNC` | 跳过启动同步 | `false` | ❌ |
 | `DEBUG` | 调试模式 | `0` | ❌ |
 
-> 注：环境变量主要用于首次初始化。日常运行中配置通过 Web 管理后台管理，持久化在数据库中。
+> 注：SOAR 连接配置不再使用环境变量，统一通过 Web 管理后台管理并持久化到数据库中。
 
 ### 数据库配置
 
@@ -589,7 +582,7 @@ tail -f logs/soar_mcp_$(date +%Y%m%d).log
 **症状**：内网自签名证书导致 SOAR API 连接失败
 
 **解决方案**：
-在管理后台「系统配置」中将 `ssl_verify` 设为 `False`，或在 `.env` 文件中设置 `SSL_VERIFY=0`。
+在管理后台「系统配置」中关闭“SSL 证书验证”，保存后重新测试连接。
 
 #### 5. 服务需要对外暴露
 

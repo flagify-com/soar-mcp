@@ -69,7 +69,8 @@ class ConfigManager:
             soar_api_token=config.get("soar_api_token", ""),
             soar_timeout=config.get("soar_timeout", 30),
             sync_interval=config.get("sync_interval", 14400),
-            soar_labels=config.get("soar_labels", ["MCP"])
+            soar_labels=config.get("soar_labels", ["MCP"]),
+            ssl_verify=self.get_ssl_verify()
         )
     
     def update_soar_config(self, config_data: SystemConfigData) -> bool:
@@ -81,6 +82,7 @@ class ConfigManager:
             success &= self.set("soar_timeout", config_data.soar_timeout, "API超时时间(秒)")
             success &= self.set("sync_interval", config_data.sync_interval, "同步周期(秒)")
             success &= self.set("soar_labels", config_data.soar_labels, "剧本抓取标签列表")
+            success &= self.set("ssl_verify", config_data.ssl_verify, "SSL证书验证")
 
             if success:
                 logger.info("SOAR配置更新成功")
@@ -186,7 +188,7 @@ class ConfigManager:
             config = config_data or self.get_soar_config()
             
             # 确定 SSL 验证设置
-            ssl_verify = self.get_ssl_verify()
+            ssl_verify = config.ssl_verify
             
             headers = {
                 "hg-token": config.soar_api_token,
