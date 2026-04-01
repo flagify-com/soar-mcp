@@ -117,7 +117,11 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 
 ### 🛠️ 第一步：项目部署
 
-#### 1. 获取项目代码
+您可以根据实际需求选择 **原生部署**、**Docker 部署** 或 **离线打包发布**。
+
+#### 方案一：Python 原生部署 (推荐开发环境使用)
+
+##### 1. 获取项目代码
 
 ```bash
 # 克隆项目
@@ -129,7 +133,7 @@ wget https://github.com/flagify-com/soar-mcp/releases/latest/download/soar-mcp.z
 unzip soar-mcp.zip && cd soar-mcp
 ```
 
-#### 2. 环境配置
+##### 2. 环境配置
 
 ```bash
 # 创建 Python 虚拟环境
@@ -146,7 +150,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-#### 3. 首次启动
+##### 3. 首次启动
 
 ```bash
 # 直接启动服务器
@@ -181,6 +185,45 @@ python3 soar_mcp_server.py
 
 ![SOAR MCP服务器控制台启动界面](docs/images/admin_console.png)
 *SOAR MCP 服务器启动后的控制台输出界面*
+
+#### 方案二：Docker 容器部署 (推荐服务器环境使用)
+
+项目原生包含 `Dockerfile` 和 `docker-compose.yml`，极大简化了部署流程。
+
+1. **直接构建并后台启动服务**：
+   ```bash
+   # 为避免卷挂载时 sqlite db 尚未生成而被 Docker 误创建为空目录，请先进行本地文件预占位
+   mkdir -p logs && touch soar_mcp.db
+   
+   # 一键构建镜像并启动
+   docker-compose up -d --build
+   ```
+
+2. **查看运行日志获取初始密码**：
+   ```bash
+   # 强烈建议在此步查看日志，获取管理员初始随机密码
+   docker-compose logs -f soar-mcp-server
+   ```
+
+#### 方案三：离线打包与远程一键部署
+
+如果您需要将测试通过的服务迁移到**无法访问外网的内网服务器**上，可以使用本项目自带的代码与镜像导出工具，实现内网全自动打包迁移：
+
+1. **在能够构建镜像的开发机或跳板机上执行“封包”**：
+   ```bash
+   # 此脚本会自动归档最新构建的 Docker 镜像和挂载目录，生成完全离线可用的发布包
+   ./export_release.sh
+   # 构建完成后当前目录将生成：soar-mcp-release.tar.gz
+   ```
+
+2. **将打包好的 `soar-mcp-release.tar.gz` 传送到目标内网服务器中，解压即用**：
+   ```bash
+   tar -xzvf soar-mcp-release.tar.gz
+   cd soar-mcp-release
+   
+   # 执行自动化一键部署脚本（已自带 docker load 镜像加载逻辑）
+   ./install.sh
+   ```
 
 ### ⚙️ 第二步：SOAR 平台配置
 
