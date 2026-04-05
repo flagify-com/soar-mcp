@@ -125,14 +125,14 @@ async def test_tools_directly():
                 print("      ⏳ 等待15秒...")
                 await asyncio.sleep(15)
         
-        # 6. 测试 query_result_by_activity_id
-        print(f"\n6️⃣ 测试 query_result_by_activity_id - 查询执行结果 (活动ID: {activity_id})")
+        # 6. 测试 query_playbook_execution_overview_by_activity_id
+        print(f"\n6️⃣ 测试 query_playbook_execution_overview_by_activity_id - 查询执行概览结果 (活动ID: {activity_id})")
 
         # 等待执行完成
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
 
-        result = query_playbook_execution_result_by_activity_id(activity_id=activity_id)
+        result = query_playbook_execution_overview_by_activity_id(activity_id=activity_id)
         if result:
             data = json.loads(result)
             print(f"   📊 最终状态: {data.get('status')}")

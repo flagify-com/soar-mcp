@@ -63,12 +63,12 @@ async def test_real_execute():
             status_data = json.loads(status_text)
             print(json.dumps(status_data, indent=2, ensure_ascii=False))
             
-            # 如果状态为SUCCESS，查询详细结果
+            # 如果状态为SUCCESS，查询概览结果
             if status_data.get("success") and status_data.get("status") == "SUCCESS":
-                print(f"\n📊 查询执行结果，活动ID: {activity_id}")
+                print(f"\n📊 查询概览结果，活动ID: {activity_id}")
                 
                 result_result = await client.client.call_tool(
-                    "query_playbook_execution_result_by_activity_id",
+                    "query_playbook_execution_overview_by_activity_id",
                     arguments={"activity_id": activity_id}
                 )
                 

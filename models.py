@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import List, Optional, Dict, Any, Union
 
-from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Text, Boolean, create_engine
+from sqlalchemy import Column, Integer, BigInteger, String, DateTime, Text, Boolean, create_engine, text
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from pydantic import BaseModel, Field, ConfigDict
@@ -31,6 +31,7 @@ class PlaybookModel(Base):
     update_time = Column(DateTime)
     remote_update_time = Column(DateTime, index=True)
     playbook_params = Column(Text)  # JSON array
+    result_focus_keywords = Column(Text, default="[]")  # JSON array
     sync_time = Column(DateTime, default=datetime.now)
     enabled = Column(Boolean, default=True, index=True)
     
@@ -275,6 +276,7 @@ class DatabaseManager:
     def init_db(self):
         """初始化数据库表"""
         Base.metadata.create_all(bind=self.engine)
+        self._migrate_playbooks_schema()
         logger.database_info(f"数据库初始化完成: {self.db_path}")
     
     @contextmanager
@@ -304,6 +306,70 @@ class DatabaseManager:
             ]
         except json.JSONDecodeError:
             return []
+
+    @staticmethod
+    def _parse_string_list(raw_json: str) -> List[str]:
+        """解析字符串列表 JSON 字符串"""
+        if not raw_json:
+            return []
+
+        try:
+            parsed = json.loads(raw_json)
+        except json.JSONDecodeError:
+            return []
+
+        if not isinstance(parsed, list):
+            return []
+
+        normalized = []
+        for item in parsed:
+            if not isinstance(item, str):
+                continue
+            value = item.strip()
+            if value and value not in normalized:
+                normalized.append(value)
+        return normalized
+
+    @staticmethod
+    def _normalize_focus_keywords(keywords: Any) -> List[str]:
+        """标准化结果提取关键词列表"""
+        if keywords is None:
+            return []
+
+        if isinstance(keywords, str):
+            raw_items = keywords.replace("，", ",").replace("\n", ",").split(",")
+        elif isinstance(keywords, list):
+            raw_items = keywords
+        else:
+            return []
+
+        normalized = []
+        for item in raw_items:
+            if not isinstance(item, str):
+                continue
+            value = item.strip()
+            if value and value not in normalized:
+                normalized.append(value)
+        return normalized
+
+    def _migrate_playbooks_schema(self):
+        """为旧版本数据库补充新增列"""
+        try:
+            with self.engine.begin() as conn:
+                columns = {
+                    row[1] for row in conn.execute(text("PRAGMA table_info(playbooks)")).fetchall()
+                }
+                if "result_focus_keywords" not in columns:
+                    conn.execute(
+                        text("ALTER TABLE playbooks ADD COLUMN result_focus_keywords TEXT DEFAULT '[]'")
+                    )
+                    conn.execute(
+                        text("UPDATE playbooks SET result_focus_keywords = '[]' "
+                             "WHERE result_focus_keywords IS NULL OR result_focus_keywords = ''")
+                    )
+                    logger.info("数据库迁移完成: playbooks.result_focus_keywords")
+        except Exception as e:
+            logger.error(f"数据库迁移 playbooks.result_focus_keywords 失败: {e}")
 
     @staticmethod
     def _playbook_to_data(playbook: PlaybookModel) -> PlaybookData:
@@ -353,6 +419,8 @@ class DatabaseManager:
                     existing.update_time = playbook_data.update_time
                     existing.remote_update_time = playbook_data.remote_update_time
                     existing.playbook_params = params_json
+                    if not existing.result_focus_keywords:
+                        existing.result_focus_keywords = "[]"
                     existing.sync_time = datetime.now()
                     logger.sync_success(f"更新剧本 {playbook_data.id}: {playbook_data.name}")
                 else:
@@ -366,6 +434,7 @@ class DatabaseManager:
                         update_time=playbook_data.update_time,
                         remote_update_time=playbook_data.remote_update_time,
                         playbook_params=params_json,
+                        result_focus_keywords="[]",
                         sync_time=datetime.now()
                     )
                     session.add(new_playbook)
@@ -640,6 +709,7 @@ class DatabaseManager:
                     "playbookCategory": p.playbook_category or "未分类",
                     "description": p.description or "",
                     "enabled": p.enabled if p.enabled is not None else True,
+                    "resultFocusKeywords": self._parse_string_list(p.result_focus_keywords),
                     "createTime": p.create_time.isoformat() if p.create_time else None,
                     "updateTime": p.update_time.isoformat() if p.update_time else None,
                     "syncTime": p.sync_time.isoformat() if p.sync_time else None
@@ -664,6 +734,7 @@ class DatabaseManager:
                     "description": playbook.description or "",
                     "enabled": playbook.enabled if playbook.enabled is not None else True,
                     "playbookParams": playbook.playbook_params or "[]",
+                    "resultFocusKeywords": self._parse_string_list(playbook.result_focus_keywords),
                     "createTime": playbook.create_time.isoformat() if playbook.create_time else None,
                     "updateTime": playbook.update_time.isoformat() if playbook.update_time else None,
                     "syncTime": playbook.sync_time.isoformat() if playbook.sync_time else None,
@@ -687,6 +758,37 @@ class DatabaseManager:
                 return True
             except Exception as e:
                 logger.error(f"更新剧本状态失败: {e}")
+                session.rollback()
+                return False
+
+    def get_playbook_focus_keywords(self, playbook_id: int) -> List[str]:
+        """获取剧本结果提取关键词"""
+        with self.get_session() as session:
+            try:
+                playbook = session.query(PlaybookModel).filter_by(id=playbook_id).first()
+                if not playbook:
+                    return []
+                return self._parse_string_list(playbook.result_focus_keywords)
+            except Exception as e:
+                logger.error(f"获取剧本结果提取关键词失败 {playbook_id}: {e}")
+                return []
+
+    def update_playbook_focus_keywords(self, playbook_id: int, keywords: Any) -> bool:
+        """更新剧本结果提取关键词"""
+        normalized_keywords = self._normalize_focus_keywords(keywords)
+        with self.get_session() as session:
+            try:
+                playbook = session.query(PlaybookModel).filter_by(id=playbook_id).first()
+                if not playbook:
+                    return False
+                playbook.result_focus_keywords = json.dumps(normalized_keywords, ensure_ascii=False)
+                session.commit()
+                logger.info(
+                    f"剧本 {playbook_id} 结果提取关键词已更新: {', '.join(normalized_keywords) if normalized_keywords else '[]'}"
+                )
+                return True
+            except Exception as e:
+                logger.error(f"更新剧本结果提取关键词失败 {playbook_id}: {e}")
                 session.rollback()
                 return False
 
