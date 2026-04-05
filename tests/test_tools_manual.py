@@ -191,8 +191,8 @@ def query_playbook_execution_status_by_activity_id_logic(activity_id: str) -> st
             "error": f"查询执行状态失败: {str(e)}"
         }, ensure_ascii=False, indent=2)
 
-def query_playbook_execution_result_by_activity_id_logic(activity_id: str) -> str:
-    """实现query_result_by_activity_id的逻辑"""
+def query_playbook_execution_overview_by_activity_id_logic(activity_id: str) -> str:
+    """实现query_playbook_execution_overview_by_activity_id的逻辑"""
     try:
         if activity_id not in MOCK_EXECUTIONS:
             return json.dumps({
@@ -356,14 +356,14 @@ async def test_all_tools():
                 print("      ⏳ 等待15秒...")
                 await asyncio.sleep(15)
         
-        # 6. 测试 query_result_by_activity_id
-        print(f"\n6️⃣ 测试 query_result_by_activity_id - 查询执行结果 (活动ID: {activity_id})")
+        # 6. 测试 query_playbook_execution_overview_by_activity_id
+        print(f"\n6️⃣ 测试 query_playbook_execution_overview_by_activity_id - 查询执行概览结果 (活动ID: {activity_id})")
 
         # 等待执行完成
         print("   ⏳ 等待剧本执行完成...")
         await asyncio.sleep(35)  # 等待超过30秒确保执行完成
 
-        result = query_playbook_execution_result_by_activity_id_logic(activity_id)
+        result = query_playbook_execution_overview_by_activity_id_logic(activity_id)
         data = json.loads(result)
         if "error" not in data:
             print(f"   📊 最终状态: {data.get('status')}")

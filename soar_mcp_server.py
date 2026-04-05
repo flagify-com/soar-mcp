@@ -11,10 +11,11 @@ import time
 from collections import OrderedDict
 from contextvars import ContextVar
 from datetime import datetime
-from typing import Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import httpx
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request, render_template, send_file
+from jinja2 import TemplateNotFound
 from threading import Thread
 
 from fastmcp import FastMCP
@@ -166,6 +167,162 @@ def parse_playbook_id(playbook_id) -> int:
         raise ValueError(f"不支持的剧本ID格式: {type(playbook_id)} - {playbook_id}")
 
 
+def _parse_admin_playbook_id(playbook_id: str) -> int:
+    """解析管理后台剧本ID"""
+    if playbook_id.startswith('id_'):
+        return int(playbook_id[3:])
+    return int(playbook_id)
+
+
+def _get_first_present(data: Dict[str, Any], *keys: str) -> Any:
+    """获取字典中第一个存在且非空的字段值"""
+    if not isinstance(data, dict):
+        return None
+    for key in keys:
+        value = data.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def _build_activity_summary(activity: Dict[str, Any]) -> Dict[str, Any]:
+    """构建执行活动摘要"""
+    return {
+        "activityId": _get_first_present(activity, "activityId", "activieId"),
+        "playbookId": _get_first_present(activity, "playbookId", "excutorInstanceId", "executorInstanceId"),
+        "playbookDisplayName": activity.get("displayName") or _get_first_present(
+            activity, "excutorInstanceName", "executorInstanceName"
+        ),
+        "status": _get_first_present(activity, "excuteStatus", "executeStatus"),
+        "msg": activity.get("msg"),
+        "tips": activity.get("tips"),
+        "createTime": activity.get("createTime"),
+        "updateTime": activity.get("updateTime"),
+        "startTime": activity.get("startTime"),
+        "finishTime": activity.get("finishTime"),
+        "params": activity.get("excutorActionParams"),
+    }
+
+
+def _build_simple_execution_result(api_result: Dict[str, Any], focus_keywords: List[str]) -> Dict[str, Any]:
+    """构建瘦结果"""
+    result_data = api_result.get("result", {}) if isinstance(api_result, dict) else {}
+    activity = result_data.get("activity", {}) if isinstance(result_data, dict) else {}
+    nodes = result_data.get("nodeResultModels", []) if isinstance(result_data, dict) else []
+    assets = result_data.get("assetResultModels", []) if isinstance(result_data, dict) else []
+
+    asset_counts: Dict[Any, int] = {}
+    for asset in assets:
+        node_result_id = asset.get("nodeResultId")
+        if node_result_id is None:
+            continue
+        asset_counts[node_result_id] = asset_counts.get(node_result_id, 0) + 1
+
+    node_digest = []
+    for node in nodes:
+        node_result_id = node.get("id")
+        node_digest.append({
+            "nodeResultId": node_result_id,
+            "nodeId": node.get("nodeId"),
+            "displayName": node.get("displayName"),
+            "nodeType": node.get("nodeType"),
+            "appDisplayName": node.get("appDisplayName"),
+            "actionDisplayName": node.get("actionDisplayName"),
+            "status": _get_first_present(node, "excuteStatus", "executeStatus"),
+            "code": node.get("code"),
+            "msg": node.get("msg"),
+            "tips": node.get("tips"),
+            "assetResultCount": asset_counts.get(node_result_id, 0),
+        })
+
+    return {
+        "activity": _build_activity_summary(activity),
+        "focusKeywordsConfigured": focus_keywords,
+        "focusedResultAvailable": bool(focus_keywords),
+        "counts": {
+            "totalNodes": len(nodes),
+            "totalAssetResults": len(assets),
+        },
+        "nodeResultModels": node_digest,
+    }
+
+
+def _match_focus_nodes(nodes: List[Dict[str, Any]], focus_keywords: List[str]) -> List[Dict[str, Any]]:
+    """按关键词匹配节点显示名称"""
+    normalized_keywords = [kw.strip() for kw in focus_keywords if isinstance(kw, str) and kw.strip()]
+    if not normalized_keywords:
+        return []
+
+    matched_nodes = []
+    for node in nodes:
+        display_name = (node.get("displayName") or "").strip()
+        keyword_hits = [kw for kw in normalized_keywords if kw in display_name]
+        if not keyword_hits:
+            continue
+
+        node_with_hits = dict(node)
+        node_with_hits["keywordHits"] = keyword_hits
+        matched_nodes.append(node_with_hits)
+
+    return matched_nodes
+
+
+def _build_focused_execution_result(api_result: Dict[str, Any], focus_keywords: List[str]) -> Dict[str, Any]:
+    """构建胖结果"""
+    result_data = api_result.get("result", {}) if isinstance(api_result, dict) else {}
+    activity = result_data.get("activity", {}) if isinstance(result_data, dict) else {}
+    nodes = result_data.get("nodeResultModels", []) if isinstance(result_data, dict) else []
+    assets = result_data.get("assetResultModels", []) if isinstance(result_data, dict) else []
+
+    matched_nodes = _match_focus_nodes(nodes, focus_keywords)
+    matched_node_ids = {node.get("id") for node in matched_nodes if node.get("id") is not None}
+    matched_assets = [
+        asset for asset in assets
+        if asset.get("nodeResultId") in matched_node_ids
+    ]
+
+    if not focus_keywords:
+        message = "当前剧本未配置结果提取关键词，请先在管理后台的剧本详情中配置关键词。"
+    elif matched_nodes:
+        message = f"已按关键词匹配到 {len(matched_nodes)} 个节点和 {len(matched_assets)} 条资产执行结果。"
+    else:
+        message = "当前执行结果中未匹配到配置的关键词节点。"
+
+    return {
+        "activity": _build_activity_summary(activity),
+        "focusKeywords": focus_keywords,
+        "keywordMatchMode": "OR",
+        "keywordConfigured": bool(focus_keywords),
+        "matchedNodeCount": len(matched_nodes),
+        "matchedAssetCount": len(matched_assets),
+        "unmatchedNodeCount": max(len(nodes) - len(matched_nodes), 0),
+        "unmatchedAssetCount": max(len(assets) - len(matched_assets), 0),
+        "message": message,
+        "nodeResultModels": matched_nodes,
+        "assetResultModels": matched_assets,
+    }
+
+
+async def _fetch_execution_api_result(activity_id: str) -> Dict[str, Any]:
+    """获取执行结果原始响应"""
+    base_url = config_manager.get_api_url()
+    api_token = config_manager.get_api_token()
+    api_url = f"{base_url.rstrip('/')}/odp/core/v1/api/event/activity?activityId={activity_id}"
+    headers = {'hg-token': api_token, 'Content-Type': 'application/json'}
+
+    client = await get_soar_client()
+    response = await client.get(api_url, headers=headers)
+
+    if response.status_code != 200:
+        raise Exception(f"API调用失败: {response.status_code}")
+
+    api_result = response.json()
+    if api_result.get('code') != 200:
+        raise Exception(f"API返回错误: {api_result.get('message', '未知错误')}")
+
+    return api_result
+
+
 # ===== Flask 管理后台 =====
 
 admin_app = Flask(__name__)
@@ -268,8 +425,8 @@ def verify_token():
 def admin_page():
     """管理后台首页"""
     try:
-        return send_file('templates/admin.html')
-    except FileNotFoundError:
+        return render_template('admin.html', app_version=__version__)
+    except TemplateNotFound:
         return jsonify({"error": "管理页面未找到"}), 404
 
 
@@ -299,10 +456,7 @@ def get_admin_playbooks():
 def get_playbook_detail(playbook_id):
     """获取单个剧本详情"""
     try:
-        if playbook_id.startswith('id_'):
-            playbook_id_int = int(playbook_id[3:])
-        else:
-            playbook_id_int = int(playbook_id)
+        playbook_id_int = _parse_admin_playbook_id(playbook_id)
         playbook = db_manager.get_playbook_by_id(playbook_id_int)
         if playbook:
             return jsonify({"success": True, "data": playbook})
@@ -318,10 +472,7 @@ def get_playbook_detail(playbook_id):
 def toggle_playbook(playbook_id):
     """切换剧本启用状态"""
     try:
-        if playbook_id.startswith('id_'):
-            playbook_id_int = int(playbook_id[3:])
-        else:
-            playbook_id_int = int(playbook_id)
+        playbook_id_int = _parse_admin_playbook_id(playbook_id)
         data = request.get_json()
         enabled = data.get('enabled', True)
         success = db_manager.update_playbook_status(playbook_id_int, enabled)
@@ -332,6 +483,33 @@ def toggle_playbook(playbook_id):
     except Exception as e:
         logger.error(f"切换剧本状态失败: {e}")
         return jsonify({"success": False, "error": "切换剧本状态时发生内部错误"}), 500
+
+
+@admin_app.route('/api/admin/playbooks/<string:playbook_id>/focus-keywords', methods=['POST'])
+@jwt_required
+def update_playbook_focus_keywords(playbook_id):
+    """更新剧本结果提取关键词"""
+    try:
+        playbook_id_int = _parse_admin_playbook_id(playbook_id)
+        data = request.get_json() or {}
+        keywords = data.get('keywords', [])
+
+        success = db_manager.update_playbook_focus_keywords(playbook_id_int, keywords)
+        if not success:
+            return jsonify({"success": False, "error": f"未找到剧本 {playbook_id}"}), 404
+
+        saved_keywords = db_manager.get_playbook_focus_keywords(playbook_id_int)
+        return jsonify({
+            "success": True,
+            "message": "剧本结果提取关键词已保存",
+            "data": {
+                "id": str(playbook_id_int),
+                "resultFocusKeywords": saved_keywords
+            }
+        })
+    except Exception as e:
+        logger.error(f"更新剧本结果提取关键词失败: {e}")
+        return jsonify({"success": False, "error": "更新剧本结果提取关键词时发生内部错误"}), 500
 
 
 @admin_app.route('/api/admin/config', methods=['GET'])
@@ -556,7 +734,12 @@ def get_system_stats():
     try:
         playbooks_stats = db_manager.get_playbooks_stats()
         apps_stats = db_manager.get_apps_stats()
-        stats = {**playbooks_stats, **apps_stats, "last_sync_time": db_manager.get_last_sync_time()}
+        stats = {
+            **playbooks_stats,
+            **apps_stats,
+            "last_sync_time": db_manager.get_last_sync_time(),
+            "version": __version__,
+        }
         return jsonify({"success": True, "stats": stats})
     except Exception as e:
         logger.error(f"获取系统统计失败: {e}")
@@ -748,7 +931,8 @@ async def query_playbook_execution_status_by_activity_id(activity_id: str) -> st
             "activityId": activity_id,
             "status": execution_status,
             "message": (
-                f"执行已完成，请调用 query_playbook_execution_result_by_activity_id 查询详细结果"
+                "执行已完成，请调用 query_playbook_execution_overview_by_activity_id 获取概览结果，"
+                "或调用 query_playbook_execution_key_results_by_activity_id 获取关键结果"
                 if execution_status == "SUCCESS"
                 else f"执行进行中，请稍后再次查询"
             ),
@@ -773,16 +957,16 @@ async def query_playbook_execution_status_by_activity_id(activity_id: str) -> st
         }, ensure_ascii=False, indent=2)
 
 
-@mcp.tool
+@mcp.tool(name="query_playbook_execution_overview_by_activity_id")
 async def query_playbook_execution_result_by_activity_id(activity_id: str) -> str:
     """
-    查询剧本执行详细结果
+    查询剧本执行概览结果
 
     Args:
         activity_id: 活动ID，从execute_playbook返回
 
     Returns:
-        返回详细执行结果，建议先确认status为SUCCESS后调用
+        返回概览结果，包含活动摘要和节点摘要
     """
     if not activity_id or activity_id.strip() == "":
         return json.dumps({
@@ -791,37 +975,75 @@ async def query_playbook_execution_result_by_activity_id(activity_id: str) -> st
             "help": "请从 execute_playbook 返回结果的 activity_id 字段中获取"
         }, ensure_ascii=False, indent=2)
 
-    audit_mcp_access(action="query_playbook_execution_result_by_activity_id",
-                     resource=f"soar://executions/{activity_id}/result",
+    audit_mcp_access(action="query_playbook_execution_overview_by_activity_id",
+                     resource=f"soar://executions/{activity_id}/result/overview",
                      parameters={"activity_id": activity_id})
 
     try:
-        base_url = config_manager.get_api_url()
-        api_token = config_manager.get_api_token()
-        api_url = f"{base_url.rstrip('/')}/odp/core/v1/api/event/activity?activityId={activity_id}"
-        headers = {'hg-token': api_token, 'Content-Type': 'application/json'}
-
-        client = await get_soar_client()
-        response = await client.get(api_url, headers=headers)
-
-        if response.status_code != 200:
-            raise Exception(f"API调用失败: {response.status_code}")
-
-        api_result = response.json()
-        if api_result.get('code') != 200:
-            raise Exception(f"API返回错误: {api_result.get('message', '未知错误')}")
+        api_result = await _fetch_execution_api_result(activity_id)
+        activity = (api_result.get("result") or {}).get("activity", {})
+        playbook_id = _get_first_present(activity, "playbookId", "excutorInstanceId", "executorInstanceId")
+        focus_keywords = db_manager.get_playbook_focus_keywords(int(playbook_id)) if playbook_id else []
+        simple_result = _build_simple_execution_result(api_result, focus_keywords)
 
         return json.dumps({
             "success": True,
             "activityId": activity_id,
             "queryTime": datetime.now().isoformat(),
-            "executionResult": api_result
+            "resultMode": "overview",
+            "executionResult": simple_result
         }, ensure_ascii=False, indent=2)
 
     except Exception as e:
         return json.dumps({
             "success": False,
-            "error": f"查询执行结果失败: {str(e)}",
+            "error": f"查询剧本概览结果失败: {str(e)}",
+            "activityId": activity_id,
+            "timestamp": datetime.now().isoformat()
+        }, ensure_ascii=False, indent=2)
+
+
+@mcp.tool(name="query_playbook_execution_key_results_by_activity_id")
+async def query_playbook_execution_full_result_by_activity_id(activity_id: str) -> str:
+    """
+    查询剧本执行关键结果
+
+    Args:
+        activity_id: 活动ID，从execute_playbook返回
+
+    Returns:
+        返回按剧本配置提取的关键节点和资产执行结果
+    """
+    if not activity_id or activity_id.strip() == "":
+        return json.dumps({
+            "success": False,
+            "error": "activity_id 参数不能为空",
+            "help": "请从 execute_playbook 返回结果的 activity_id 字段中获取"
+        }, ensure_ascii=False, indent=2)
+
+    audit_mcp_access(action="query_playbook_execution_key_results_by_activity_id",
+                     resource=f"soar://executions/{activity_id}/result/key-results",
+                     parameters={"activity_id": activity_id})
+
+    try:
+        api_result = await _fetch_execution_api_result(activity_id)
+        activity = (api_result.get("result") or {}).get("activity", {})
+        playbook_id = _get_first_present(activity, "playbookId", "excutorInstanceId", "executorInstanceId")
+        focus_keywords = db_manager.get_playbook_focus_keywords(int(playbook_id)) if playbook_id else []
+        full_result = _build_focused_execution_result(api_result, focus_keywords)
+
+        return json.dumps({
+            "success": True,
+            "activityId": activity_id,
+            "queryTime": datetime.now().isoformat(),
+            "resultMode": "key_results",
+            "executionResult": full_result
+        }, ensure_ascii=False, indent=2)
+
+    except Exception as e:
+        return json.dumps({
+            "success": False,
+            "error": f"查询剧本关键结果失败: {str(e)}",
             "activityId": activity_id,
             "timestamp": datetime.now().isoformat()
         }, ensure_ascii=False, indent=2)

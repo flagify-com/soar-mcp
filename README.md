@@ -18,12 +18,12 @@
 
 SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专为 [OctoMation SOAR 平台](https://github.com/flagify-com/OctoMation) 设计**。通过 Model Context Protocol 将 SOAR (Security Orchestration, Automation and Response) 能力直接集成到各种 AI 客户端中，包括 Claude Desktop、Cherry Studio、Cursor、Trae 等。它提供了完整的安全事件管理、剧本执行、威胁情报查询等功能，让 AI 助手具备专业的网络安全响应能力。
 
-## 🆕 v1.5.2 更新摘要
+## 🆕 v1.6.0 更新摘要
 
-- **配置治理**：SOAR 连接配置统一迁移到后台数据库管理，移除运行时 `.env` 配置误导
-- **首次引导**：首次登录未配置 SOAR 时，自动进入系统配置并显示 onboarding 引导
-- **安全增强**：新增管理员密码修改能力，旧后台会话在改密后立即失效
-- **界面优化**：管理员密码管理从系统配置中独立为主菜单「密码管理」
+- **关键结果提取**：新增剧本动作节点名称关键词，支持在剧本执行结果中提取关键节点与资产结果
+- **结果语义拆分**：新增 `query_playbook_execution_overview_by_activity_id` 与 `query_playbook_execution_key_results_by_activity_id`
+- **升级治理**：新增 `migrate_db.py` 手动迁移脚本，README 补齐升级风险与升级步骤
+- **版本可见性**：管理后台头部、统计页、底部均展示当前版本，便于用户核对升级
 
 完整变更请查看 `CHANGELOG.md`。
 
@@ -75,12 +75,14 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 - `query_playbook_execution_params` - 根据剧本ID查询执行所需的参数定义
 - `execute_playbook` - 执行指定的 SOAR 剧本，支持参数传递（异步）
 - `query_playbook_execution_status_by_activity_id` - 根据活动ID查询剧本执行状态（异步）
-- `query_playbook_execution_result_by_activity_id` - 根据活动ID查询剧本执行的详细结果（异步）
+- `query_playbook_execution_overview_by_activity_id` - 根据活动ID查询剧本执行概览结果（异步）
+- `query_playbook_execution_key_results_by_activity_id` - 根据活动ID查询剧本执行关键结果（异步）
 
 #### 重要说明
 - **剧本ID格式**：支持 LONG 类型（64位整数），可以使用整数或字符串格式
-- **执行流程**：查询参数 → 执行剧本 → 检查状态 → 获取结果
+- **执行流程**：查询参数 → 执行剧本 → 检查状态 → 查概览结果 / 查关键结果
 - **兼容性**：剧本ID 可能超出 JavaScript 安全整数范围，建议使用字符串格式
+- **关键结果提取**：`query_playbook_execution_key_results_by_activity_id` 不需要额外传关键词，关键词来自管理后台对剧本的配置
 
 ### 📊 MCP 资源
 
@@ -98,6 +100,20 @@ SOAR MCP Server 是一个创新的安全编排平台集成解决方案，**专�
 - **系统配置**：SOAR 连接设置、同步配置、SSL 验证开关
 - **密码管理**：独立的管理员密码修改入口和安全策略说明
 - **统计信息**：系统状态、执行统计、同步时间
+
+#### 关键结果提取配置
+
+在管理后台的剧本详情中，可以为每个剧本配置“剧本动作节点名称关键词”：
+
+- 支持按 `Enter`、英文逗号 `,`、中文逗号 `，` 录入多个关键词
+- 多个关键词之间是“或”关系
+- 系统会在剧本执行结果的 `nodeResultModels.displayName` 中按包含关系匹配这些节点名称关键词
+- 命中后，会返回这些节点及其对应的 `assetResultModels`
+
+> 提示：为了让关键结果提取更稳定，建议在 SOAR 的剧本节点显示名称中直接加入这些关键词，例如 `[威胁情报] 查询 IP`、`[隔离] 云主机安全组处置`。
+
+![剧本动作节点名称关键词配置](docs/images/playbook-node-name-keywords.png)
+*管理后台中的“剧本动作节点名称关键词”展示与配置入口*
 
 ## 🚀 快速开始
 
@@ -396,49 +412,112 @@ python3 soar_mcp_server.py
 
 4. **获取执行结果**：
 ```
-获取活动ID为 xxx 的剧本执行详细结果
+获取活动ID为 xxx 的剧本执行概览结果
+```
+
+5. **获取关键结果**：
+```
+获取活动ID为 xxx 的剧本执行关键结果
+```
+
+#### 本地单元测试
+
+建议在改动剧本结果提取相关逻辑后，执行下面的本地单元测试：
+
+```bash
+python3 -m unittest discover -s tests -p 'test_playbook_result_views.py'
 ```
 
 ## 📦 从旧版本升级
 
-如果你正在从 **v1.0.x** 升级到 **v1.1.0+**，请注意以下重要变更。
+当前版本相对旧版本有一项**数据库结构新增**和一项**MCP 工具语义调整**。如果你是新部署用户，可以直接忽略本节；如果你是带历史数据升级，请按下面步骤执行。
 
-### 数据库兼容性
+### 这次升级改了什么
 
-好消息：**数据库结构基本兼容**，旧版数据库可以直接复用。
+#### 1. 数据库变更
 
-| 数据类型 | 兼容性 | 说明 |
-|---------|--------|------|
-| SOAR 配置 | ✅ 自动保留 | API 地址、Token、标签等 |
-| 剧本/应用数据 | ✅ 自动保留 | 同步后的业务数据 |
-| 用户 Token | ✅ 自动保留 | MCP 访问凭证 |
-| 审计日志 | ✅ 自动保留 | 操作记录 |
-| JWT 密钥 | ✅ 自动处理 | 新版自动生成并持久化 |
-| **管理员密码** | ❌ **不兼容** | SHA-256 → bcrypt，必须重置 |
+`playbooks` 表新增了一个字段：
 
-> **唯一的破坏性变更**：管理员密码哈希算法从 SHA-256 升级为 bcrypt。旧密码无法在新版本中验证，升级后必须重置。
+```sql
+result_focus_keywords TEXT DEFAULT '[]'
+```
 
-### 升级步骤
+这个字段用于保存每个剧本配置的“剧本动作节点名称关键词”，供 `query_playbook_execution_key_results_by_activity_id` 自动筛选关键节点结果使用。
+
+#### 2. MCP 工具语义调整
+
+剧本执行结果查询从单一结果查询拆成了两个语义化工具：
+
+- `query_playbook_execution_overview_by_activity_id`
+- `query_playbook_execution_key_results_by_activity_id`
+
+如果你的 MCP 客户端提示词、脚本或自动化流程里显式写死了旧工具名 `query_playbook_execution_result_by_activity_id`，升级后需要同步改成新的工具名。
+
+### 升级风险一览
+
+| 项目 | 是否有风险 | 说明 |
+|------|------------|------|
+| SOAR 配置 | 低 | 数据库存储，原有配置会保留 |
+| 剧本/应用数据 | 低 | 原有同步数据会保留 |
+| 用户 Token | 低 | 原有 Token 会保留 |
+| 审计日志 | 低 | 原有日志会保留 |
+| `playbooks.result_focus_keywords` | 低 | 启动时自动迁移，也可手动执行迁移脚本 |
+| MCP 结果查询工具名 | 中 | 显式依赖旧工具名的客户端需要更新 |
+| 管理员密码（仅 v1.0.x -> v1.1.0+） | 高 | 老版本 SHA-256 密码哈希不兼容，必须重置 |
+
+### 数据库迁移说明
+
+系统启动时会自动执行数据库初始化和迁移，核心逻辑在 `DatabaseManager.init_db()` 中，包含对旧版 `playbooks` 表补列的处理。
+
+为了方便在生产环境中先迁移再启动，仓库额外提供了一个手动迁移脚本：
 
 ```bash
-# 1. 备份旧数据库
+python3 migrate_db.py --db-path soar_mcp.db
+```
+
+脚本特性：
+
+- 可重复执行，幂等
+- 不会清空现有数据
+- 如果字段已存在，会直接跳过
+- 迁移完成后会打印当前 `playbooks` 表字段列表
+
+### 推荐升级步骤
+
+```bash
+# 1. 停止旧服务
+
+# 2. 备份旧数据库
 cp soar_mcp.db soar_mcp.db.bak
 
-# 2. 更新代码
+# 3. 更新代码
 git pull origin main
 
-# 3. 安装新依赖（新增 bcrypt）
+# 4. 安装或更新依赖
 source venv/bin/activate
 pip install -r requirements.txt
 
-# 4. 重置管理员密码（必须）
+# 5. 先执行数据库迁移（推荐）
+python3 migrate_db.py --db-path soar_mcp.db
+
+# 6. 如果你是从 v1.0.x 升级到 v1.1.0+，再重置管理员密码
 ./reset_admin_password.sh --random
 
-# 5. 启动服务
+# 7. 启动服务
 python3 soar_mcp_server.py
 ```
 
-> 提示：升级后所有 SOAR 配置、剧本数据、Token 等均自动保留，仅需重置管理员密码即可正常使用。
+### 升级后检查项
+
+升级完成后，建议至少确认下面几项：
+
+1. 管理后台可以正常打开，剧本详情中能看到“剧本动作节点名称关键词”
+2. 旧的 SOAR 配置、Token、剧本列表仍然存在
+3. 调用 `query_playbook_execution_overview_by_activity_id` 能返回概览结果
+4. 给某个剧本配置关键词后，调用 `query_playbook_execution_key_results_by_activity_id` 能返回关键结果
+5. 如果你有自定义提示词或自动化脚本，确认它们已经改用新的结果查询工具名
+
+> 提示：对于大多数已有用户，数据库数据本身没有破坏性变化；真正需要额外注意的是旧密码兼容性和旧 MCP 工具名切换。
 
 ## 🔧 管理工具
 
