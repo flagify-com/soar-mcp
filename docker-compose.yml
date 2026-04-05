@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  soar-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: soar-mcp:latest
+    container_name: soar-mcp-server
+    restart: always
+    environment:
+      # 在 Docker 环境中，必须将绑定地址设置为 0.0.0.0 才能暴露端口给外部宿主机访问
+      - BIND_HOST=0.0.0.0
+      # 可以在此覆盖默认的环境变量设置 
+      # - MCP_PORT=12345
+      # - ADMIN_PORT=12346
+      # - DEBUG=1
+    ports:
+      - "12345:12345" # MCP 连接端口
+      - "12346:12346" # Web 管理后台端口
+    volumes:
+      # 日志挂载（持久化日志记录）
+      - ./logs:/app/logs
+      # SQLite 文件挂载（持久化数据库数据）
+      # 【重要】：第一次运行 docker-compose 前，请确保宿主机上已存在该单文件。
+      # 不然 Docker 会把它当做一个空文件夹挂载进去，导致 sqlite 报错。
+      # 执行 docker-compose up 前，先在同级目录终端执行一下：touch soar_mcp.db 
+      - ./soar_mcp.db:/app/soar_mcp.db
