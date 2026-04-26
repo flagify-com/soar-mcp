@@ -1,30 +1,58 @@
-FROM python:3.10-slim
+# SOAR MCP Server Docker Image
 
-# 设置工作目录
+ARG PYTHON_IMAGE=python:3.11-slim
+FROM ${PYTHON_IMAGE}
+
+ARG VERSION=dev
+ARG USE_CHINA_MIRRORS=false
+
+LABEL org.opencontainers.image.title="soar-mcp"
+LABEL org.opencontainers.image.description="SOAR MCP Server for OctoMation"
+LABEL org.opencontainers.image.version="${VERSION}"
+LABEL org.opencontainers.image.source="https://github.com/flagify-com/soar-mcp"
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONIOENCODING=utf-8 \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    TZ=Asia/Shanghai \
+    MCP_PORT=12345 \
+    ADMIN_PORT=12346 \
+    BIND_HOST=0.0.0.0
+
 WORKDIR /app
 
-# 设置环境变量，确保 Python 输出直接打印到终端，不缓冲
-ENV PYTHONUNBUFFERED=1
+# Optional China mainland mirrors for local builds:
+# docker build --build-arg USE_CHINA_MIRRORS=true .
+RUN if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
+        sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources \
+        && sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources; \
+    fi
 
-# 更新 apt 并安装一些基础编译依赖（如果某些 Python 包需要 C 扩展编译）
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 先复制环境配置文件，利用 Docker 缓存加速后续构建
 COPY requirements.txt .
 
-# 安装依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN if [ "$USE_CHINA_MIRRORS" = "true" ]; then \
+        pip install --no-cache-dir -r requirements.txt \
+            -i https://mirrors.aliyun.com/pypi/simple/ \
+            --trusted-host mirrors.aliyun.com; \
+    else \
+        pip install --no-cache-dir -r requirements.txt; \
+    fi
 
-# 复制整个项目到工作目录
-# (注：.dockerignore 会过滤掉 venv, logs, 数据库等不必要文件)
 COPY . .
 
-# 暴露所需的端口
-# 12345: MCP 服务连接端口
-# 12346: Web 管理后台端口
+RUN mkdir -p /app/logs /app/data
+
 EXPOSE 12345 12346
 
-# 设定默认的容器启动命令
-CMD ["python3", "soar_mcp_server.py"]
+ENTRYPOINT []
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:${ADMIN_PORT}/login || exit 1
+
+CMD ["python", "soar_mcp_server.py"]

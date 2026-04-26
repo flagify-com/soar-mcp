@@ -1,14 +1,6 @@
-# Version control
-.git/
+# Git
+.git
 .gitignore
-
-# Environments
-.env
-.venv/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
 # Python
 __pycache__/
@@ -17,40 +9,37 @@ __pycache__/
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+.venv/
+venv/
+ENV/
 
-# Project specific runtime data
-logs/
-*.db
-*.db.bak
-*.db-shm
-*.db-wal
-*.log
+# Environment files
+.env
+.env.*
+!.env.example
+.env.local
 
-# OS & IDE
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-.vscode/
+# IDE
 .idea/
+.vscode/
 *.swp
 *.swo
+
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+
+# Runtime data
+logs/
+*.log
+data/
+*.db
+*.db-*
+
+# OS
+.DS_Store
+Thumbs.db
