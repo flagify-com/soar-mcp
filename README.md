@@ -162,6 +162,23 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+#### 2.1 容器方式（可选）
+
+```bash
+# 本地构建镜像
+docker build -t soar-mcp:local .
+
+# 运行（建议挂载日志和数据库目录）
+docker run -d --name soar-mcp \
+  -p 12345:12345 -p 12346:12346 \
+  -e BIND_HOST=0.0.0.0 \
+  -v $(pwd)/logs:/app/logs \
+  -v $(pwd)/data:/app/data \
+  soar-mcp:local
+```
+
+> 提示：镜像内默认 `MCP_PORT=12345`、`ADMIN_PORT=12346`、`BIND_HOST=0.0.0.0`，可通过环境变量覆盖。
+
 #### 3. 首次启动
 
 ```bash
@@ -197,6 +214,23 @@ python3 soar_mcp_server.py
 
 ![SOAR MCP服务器控制台启动界面](docs/images/admin_console.png)
 *SOAR MCP 服务器启动后的控制台输出界面*
+
+### 🐳 自动构建与发布（GitHub Actions）
+
+仓库内置 `.github/workflows/docker-publish.yml`：
+
+- `pull_request`：只做镜像构建验证（不推送）
+- `push main`：构建并推送到 GHCR
+- `push tag(v*)`：构建版本镜像并推送到 GHCR
+- `workflow_dispatch`：手动触发
+
+默认镜像地址：
+
+```text
+ghcr.io/<owner>/<repo>
+```
+
+例如 `ghcr.io/flagify-com/soar-mcp`。
 
 ### ⚙️ 第二步：SOAR 平台配置
 

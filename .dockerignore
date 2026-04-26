@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+
+# Docs
+*.md
+docs/
+!README.md
+
+# Runtime data
+logs/
+*.log
+data/
+*.db
+*.db-*
+
+# OS
+.DS_Store
+Thumbs.db
